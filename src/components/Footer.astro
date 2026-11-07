@@ -1,0 +1,412 @@
+
+---
+import { urlFor } from '../lib/sanity'
+
+interface FooterLink {
+  label?: string
+  url?: string
+}
+
+interface FooterColumn {
+  columnTitle?: string
+  links?: FooterLink[]
+}
+
+interface SocialLink {
+  platform?: string
+  url?: string
+}
+
+interface Props {
+  brandLogo?: any
+  brandDescription?: string
+  partnerLogo?: any
+  linkColumns?: FooterColumn[]
+  contactTitle?: string
+  email?: string
+  phone?: string
+  address?: string
+  socialTitle?: string
+  socialLinks?: SocialLink[]
+  bottomLinks?: FooterLink[]
+  copyrightText?: string
+}
+
+const {
+  brandLogo,
+  brandDescription,
+  partnerLogo,
+  linkColumns = [],
+  contactTitle,
+  email,
+  phone,
+  address,
+  socialTitle,
+  socialLinks = [],
+  bottomLinks = [],
+  copyrightText,
+} = Astro.props
+
+const brandLogoUrl = brandLogo?.asset
+  ? urlFor(brandLogo).width(300).url()
+  : ''
+
+const partnerLogoUrl = partnerLogo?.asset
+  ? urlFor(partnerLogo).width(200).url()
+  : ''
+
+const socialIcons: Record<string, string> = {
+  linkedin: 'in',
+  facebook: 'f',
+  instagram: 'ig',
+  whatsapp: 'wa',
+  youtube: 'yt',
+  twitter: 'x',
+}
+---
+
+<footer class="site-footer">
+  <div class="footer-container">
+
+    <div class="footer-grid">
+
+      <!-- Brand -->
+      <div class="footer-brand">
+        {brandLogoUrl && (
+          <img
+            src={brandLogoUrl}
+            alt="Brand logo"
+            class="footer-logo"
+            loading="lazy"
+          />
+        )}
+
+        {brandDescription && (
+          <p class="brand-description">{brandDescription}</p>
+        )}
+
+        {partnerLogoUrl && (
+          <img
+            src={partnerLogoUrl}
+            alt="Partner logo"
+            class="partner-logo"
+            loading="lazy"
+          />
+        )}
+      </div>
+
+      <!-- CMS Link Columns -->
+      {linkColumns.map((column) => (
+        <div class="footer-column">
+          {column.columnTitle && (
+            <h3>{column.columnTitle}</h3>
+          )}
+
+          <ul>
+            {column.links?.map((link) => (
+              <li>
+                <a href={link.url ?? '#'}>
+                  {link.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+
+      <!-- Contact -->
+      <div class="footer-contact">
+        {contactTitle && <h3>{contactTitle}</h3>}
+
+        {email && (
+          <div class="contact-item">
+            <span class="contact-icon">✉</span>
+            <a href={`mailto:${email}`}>{email}</a>
+          </div>
+        )}
+
+        {phone && (
+          <div class="contact-item">
+            <span class="contact-icon">♧</span>
+            <a href={`tel:${phone.replace(/\s+/g, '')}`}>
+              {phone}
+            </a>
+          </div>
+        )}
+
+        {address && (
+          <div class="contact-item">
+            <span class="contact-icon">⌖</span>
+            <p>{address}</p>
+          </div>
+        )}
+
+        {socialTitle && <h4 class="social-heading">{socialTitle}</h4>}
+
+        <div class="social-links">
+          {socialLinks.map((social) => (
+            <a
+              href={social.url ?? '#'}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={social.platform}
+              class="social-link"
+            >
+              {socialIcons[social.platform ?? ''] ?? '↗'}
+            </a>
+          ))}
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Bottom Footer -->
+    <div class="footer-bottom">
+
+      <div class="footer-bottom-links">
+        {bottomLinks.map((link) => (
+          <a href={link.url ?? '#'}>
+            {link.label}
+          </a>
+        ))}
+      </div>
+
+      {copyrightText && (
+        <p class="copyright">{copyrightText}</p>
+      )}
+
+    </div>
+
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    background: #064f8c;
+    color: #ffffff;
+    padding: 65px 0 25px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .footer-container {
+    max-width: 1400px;
+    width: calc(100% - 80px);
+    margin: 0 auto;
+  }
+
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 1.35fr 0.75fr 0.75fr 1fr 1.2fr;
+    gap: 40px;
+    padding-bottom: 60px;
+  }
+
+  .footer-logo {
+    max-width: 180px;
+    max-height: 55px;
+    object-fit: contain;
+    margin-bottom: 25px;
+  }
+
+  .brand-description {
+    color: #d7e8f8;
+    font-size: 16px;
+    line-height: 1.9;
+    margin: 0 0 35px;
+  }
+
+  .partner-logo {
+    width: 85px;
+    height: 85px;
+    object-fit: contain;
+    background: #ffffff;
+    padding: 8px;
+    border-radius: 3px;
+    box-sizing: border-box;
+  }
+
+  .footer-column h3,
+  .footer-contact h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 5px 0 25px;
+    color: #ffffff;
+  }
+
+  .footer-column ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .footer-column li {
+    margin-bottom: 17px;
+  }
+
+  .footer-column a,
+  .footer-bottom-links a {
+    color: #d7e8f8;
+    text-decoration: none;
+    font-size: 15px;
+    line-height: 1.7;
+    transition: color 0.2s ease;
+  }
+
+  .footer-column a:hover,
+  .footer-bottom-links a:hover {
+    color: #ffffff;
+  }
+
+  .footer-contact {
+    border-left: 1px solid rgba(255,255,255,0.15);
+    padding-left: 35px;
+  }
+
+  .contact-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 22px;
+  }
+
+  .contact-icon {
+    flex-shrink: 0;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+  }
+
+  .contact-item a,
+  .contact-item p {
+    color: #d7e8f8;
+    font-size: 15px;
+    line-height: 1.9;
+    text-decoration: none;
+    margin: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .contact-item a:hover {
+    color: #ffffff;
+  }
+
+  .social-heading {
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 3px;
+    margin: 35px 0 18px;
+    color: #d7e8f8;
+  }
+
+  .social-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .social-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.08);
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background 0.3s ease;
+  }
+
+  .social-link:hover {
+    background: rgba(255,255,255,0.2);
+  }
+
+  .footer-bottom {
+    border-top: 1px solid rgba(255,255,255,0.15);
+    padding-top: 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 25px;
+  }
+
+  .footer-bottom-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+  }
+
+  .copyright {
+    color: #d7e8f8;
+    font-size: 13px;
+    line-height: 1.7;
+    text-align: right;
+    margin: 0;
+  }
+
+  @media (max-width: 1100px) {
+    .footer-grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 35px;
+    }
+
+    .footer-contact {
+      border-left: none;
+      padding-left: 0;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .site-footer {
+      padding: 45px 0 25px;
+    }
+
+    .footer-container {
+      width: calc(100% - 40px);
+    }
+
+    .footer-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 35px 25px;
+      padding-bottom: 40px;
+    }
+
+    .footer-brand {
+      grid-column: 1 / -1;
+    }
+
+    .footer-contact {
+      grid-column: 1 / -1;
+    }
+
+    .footer-bottom {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .copyright {
+      text-align: left;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .footer-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .footer-brand,
+    .footer-contact {
+      grid-column: auto;
+    }
+  }
+</style>

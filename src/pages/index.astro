@@ -1,0 +1,619 @@
+
+---
+import Layout from '../layouts/Layout.astro'
+import Hero from '../components/Hero.astro'
+import Stats from '../components/Stats.astro'
+import Services from '../components/Services.astro'
+import { sanityClient, urlFor } from '../lib/sanity'
+import HowWeWork from '../components/HowWeWork.astro'
+import SuccessStories from '../components/SuccessStories.astro'
+import TrustedBrands from '../components/TrustedBrands.astro'
+import ClientAppreciation from '../components/ClientAppreciation.astro'
+import WhoWeWorkWith from '../components/WhoWeWorkWith.astro'
+import FAQ from '../components/FAQ.astro'
+import ReadyToMoveFaster from '../components/ReadyToMoveFaster.astro'
+import Footer from '../components/Footer.astro'
+
+interface Homepage {
+  title?: string
+  heroEyebrow?: string
+  heroHeading?: string
+  heroDescription?: string
+  heroImage?: {
+    asset?: {
+      _ref?: string
+      _type?: string
+    }
+    alt?: string
+  }
+  heroImageUrl?: string
+  ctaText?: string
+  ctaLink?: string
+  statsHeading?: string
+  statsDescription?: string
+  stats?: {
+    value: string
+    label: string
+  }[]
+  seoTitle?: string
+  seoDescription?: string
+}
+
+interface ServiceCard {
+  heading: string
+  description: string
+  linkText: string
+  linkUrl: string
+}
+
+interface ServicesSection {
+  sectionTitle?: string
+  cards?: ServiceCard[]
+}
+
+interface HowWeWorkStep {
+  stepNumber: string
+  icon: 'search' | 'palette' | 'rocket' | 'settings'
+  title: string
+  description: string
+}
+
+interface HowWeWorkSection {
+  sectionTitle?: string
+  sectionDescription?: string
+  steps?: HowWeWorkStep[]
+}
+
+
+interface SuccessStory {
+  industry?: string
+  location?: string
+  clientName?: string
+  icon?: string
+  title?: string
+  description?: string
+  linkText?: string
+  linkUrl?: string
+  featured?: boolean
+  image?: {
+    asset?: {
+      _ref?: string
+      _type?: string
+    }
+    alt?: string
+    crop?: {
+      top: number
+      bottom: number
+      left: number
+      right: number
+    }
+    hotspot?: {
+      x: number
+      y: number
+      width: number
+      height: number
+    }
+  }
+}
+
+interface SuccessStoriesSection {
+  sectionTitle?: string
+  sectionDescription?: string
+  stories?: SuccessStory[]
+  moreStoriesIcon?: string
+  moreStoriesLabel?: string
+  moreStoriesTitle?: string
+  moreStoriesLinkText?: string
+  moreStoriesLinkUrl?: string
+}
+
+interface TrustedBrandsSection {
+  sectionTitle?: string
+  animationSpeed?: number
+  brands?: {
+    brandName?: string
+    websiteUrl?: string
+    order?: number
+    logo?: {
+      asset?: {
+        _ref?: string
+        _type?: string
+      }
+      alt?: string
+      crop?: {
+        top: number
+        bottom: number
+        left: number
+        right: number
+      }
+      hotspot?: {
+        x: number
+        y: number
+        width: number
+        height: number
+      }
+    }
+  }[]
+}
+
+interface ClientTestimonial {
+  companyName: string
+  country?: string
+  testimonial: string
+  personName: string
+  personRole?: string
+  profileImage?: {
+    asset?: {
+      _ref: string
+      _type: string
+    }
+    alt?: string
+    crop?: any
+    hotspot?: any
+  }
+  order?: number
+}
+
+interface ClientAppreciationSection {
+  sectionTitle?: string
+  autoplayEnabled?: boolean
+  autoplayInterval?: number
+  testimonials?: ClientTestimonial[]
+}
+
+interface WhoWeWorkWithSection {
+  sectionTitle?: string
+  sectionDescription?: string
+
+  audiences?: {
+    title?: string
+    description?: string
+    order?: number
+
+    image?: {
+      asset?: {
+        _ref?: string
+        _type?: string
+      }
+      alt?: string
+      crop?: {
+        top: number
+        bottom: number
+        left: number
+        right: number
+      }
+      hotspot?: {
+        x: number
+        y: number
+        width: number
+        height: number
+      }
+    }
+  }[]
+}
+
+interface ReadyToMoveFasterSection {
+  sectionTitle?: string
+  description?: string
+  backgroundImage?: {
+    asset?: {
+      _ref?: string
+      _type?: string
+    }
+    alt?: string
+    crop?: any
+    hotspot?: any
+  }
+  overlayColor?: string
+  overlayOpacity?: number
+  buttonText?: string
+  buttonUrl?: string
+  sectionPadding?: number
+  headingColor?: string
+  descriptionColor?: string
+  buttonColor?: string
+  buttonTextColor?: string
+}
+interface FooterData {
+  brandLogo?: any
+  brandDescription?: string
+  partnerLogo?: any
+  linkColumns?: {
+    columnTitle?: string
+    links?: {
+      label?: string
+      url?: string
+    }[]
+  }[]
+  contactTitle?: string
+  email?: string
+  phone?: string
+  address?: string
+  socialTitle?: string
+  socialLinks?: {
+    platform?: string
+    url?: string
+  }[]
+  bottomLinks?: {
+    label?: string
+    url?: string
+  }[]
+  copyrightText?: string
+}
+
+const homepageQuery = `*[_type == "homepage"][0]{
+  title,
+  heroEyebrow,
+  heroHeading,
+  heroDescription,
+  heroImage{
+    asset,
+    alt,
+    crop,
+    hotspot
+  },
+  ctaText,
+  ctaLink,
+  statsHeading,
+  statsDescription,
+  stats[]{
+    value,
+    label
+  },
+  seoTitle,
+  seoDescription
+}`
+
+const servicesQuery = `*[_type == "servicesSection"][0]{
+  sectionTitle,
+  cards[]{
+    heading,
+    description,
+    linkText,
+    linkUrl
+  }
+}`
+
+const howWeWorkQuery = `*[_type == "howWeWork"][0]{
+  sectionTitle,
+  sectionDescription,
+  steps[]{
+    stepNumber,
+    icon,
+    title,
+    description
+  }
+}`
+
+
+const successStoriesQuery = `*[_type == "successStories"][0]{
+  sectionTitle,
+  sectionDescription,
+  stories[]{
+    industry,
+    location,
+    clientName,
+    icon,
+    title,
+    description,
+    linkText,
+    linkUrl,
+    featured,
+    image{
+      asset,
+      alt,
+      crop,
+      hotspot
+    }
+  },
+  moreStoriesIcon,
+  moreStoriesLabel,
+  moreStoriesTitle,
+  moreStoriesLinkText,
+  moreStoriesLinkUrl
+}`
+
+const trustedBrandsQuery = `*[_type == "trustedBrands"][0]{
+  sectionTitle,
+  animationSpeed,
+  brands[]{
+    brandName,
+    websiteUrl,
+    order,
+    logo{
+      asset,
+      alt,
+      crop,
+      hotspot
+    }
+  }
+}`
+
+const clientAppreciationQuery = `
+  *[_type == "clientAppreciation"][0] {
+    sectionTitle,
+    autoplayEnabled,
+    autoplayInterval,
+    testimonials[] {
+      companyName,
+      country,
+      testimonial,
+      personName,
+      personRole,
+      order,
+      profileImage {
+        asset,
+        alt,
+        crop,
+        hotspot
+      }
+    }
+  }`
+
+const whoWeWorkWithQuery = `
+  *[_type == "whoWeWorkWith"][0] {
+    sectionTitle,
+    sectionDescription,
+    audiences[] {
+      title,
+      description,
+      order,
+      image {
+        asset,
+        alt,
+        crop,
+        hotspot
+      }
+    }
+  }`
+
+const faqQuery = `*[_type == "faq"][0]{
+  sectionTitle,
+  categories[]{
+    categoryTitle,
+    questions[]{
+      question,
+      answer,
+      linkText,
+      linkUrl
+    }
+  },
+  buttonText,
+  buttonUrl
+}`
+
+const readyToMoveFasterQuery = `
+  *[_type == "readyToMoveFaster"][0] {
+    sectionTitle,
+    description,
+    backgroundImage {
+      asset,
+      alt,
+      crop,
+      hotspot
+    },
+    overlayColor,
+    overlayOpacity,
+    buttonText,
+    buttonUrl,
+    sectionPadding,
+    headingColor,
+    descriptionColor,
+    buttonColor,
+    buttonTextColor
+  }`
+const footerQuery = `*[_type == "footer"][0]{
+  brandLogo{
+    asset,
+    alt,
+    crop,
+    hotspot
+  },
+  brandDescription,
+  partnerLogo{
+    asset,
+    alt,
+    crop,
+    hotspot
+  },
+  linkColumns[]{
+    columnTitle,
+    links[]{
+      label,
+      url
+    }
+  },
+  contactTitle,
+  email,
+  phone,
+  address,
+  socialTitle,
+  socialLinks[]{
+    platform,
+    url
+  },
+  bottomLinks[]{
+    label,
+    url
+  },
+  copyrightText
+}`
+
+let homepage: Homepage | null = null
+let services: ServicesSection | null = null
+let howWeWork: HowWeWorkSection | null = null
+let successStories: SuccessStoriesSection | null = null
+let trustedBrands: TrustedBrandsSection | null = null
+let clientAppreciation: ClientAppreciationSection | null = null
+let whoWeWorkWith: WhoWeWorkWithSection | null = null
+let faq = null
+let readyToMoveFaster: ReadyToMoveFasterSection | null = null
+let footer: FooterData | null = null
+
+let error = false
+
+try {
+  homepage = await sanityClient.fetch<Homepage | null>(
+    homepageQuery
+  )
+
+  services = await sanityClient.fetch<ServicesSection | null>(
+    servicesQuery
+  )
+
+  howWeWork = await sanityClient.fetch<HowWeWorkSection | null>(
+    howWeWorkQuery
+  )
+
+  successStories = await sanityClient.fetch<SuccessStoriesSection | null>(
+    successStoriesQuery
+  )
+
+  trustedBrands = await sanityClient.fetch<TrustedBrandsSection | null>(
+    trustedBrandsQuery
+  )
+  clientAppreciation = await sanityClient.fetch<ClientAppreciationSection | null>(
+  	clientAppreciationQuery
+  )
+  whoWeWorkWith = await sanityClient.fetch<WhoWeWorkWithSection | null>(
+  	whoWeWorkWithQuery
+  )
+  faq = await sanityClient.fetch(
+	faqQuery
+  )
+
+  readyToMoveFaster = await sanityClient.fetch<ReadyToMoveFasterSection | null>(
+    readyToMoveFasterQuery
+  )
+  footer = await sanityClient.fetch<FooterData | null>(
+	footerQuery
+  )
+
+  if (homepage?.heroImage?.asset) {
+    homepage.heroImageUrl = urlFor(homepage.heroImage)
+      .width(1200)
+      .url()
+  }
+
+} catch (err) {
+  console.error('Failed to fetch content from Sanity:', err)
+  error = true
+}
+
+---
+
+<Layout
+  title={homepage?.seoTitle ?? 'RightDirect | Digital Growth'}
+  description={
+    homepage?.seoDescription ??
+    'RightDirect digital solutions for growing companies.'
+  }
+>
+  <main class="min-h-screen bg-white">
+    {error ? (
+      <section class="px-6 py-32 text-center">
+        <h1 class="text-2xl font-semibold text-blue-900">
+          Something went wrong
+        </h1>
+
+        <p class="mt-4 text-gray-600">
+          Unable to load homepage content. Please try again later.
+        </p>
+      </section>
+    ) : (
+      <>
+        <Hero
+          eyebrow={homepage?.heroEyebrow}
+          heading={homepage?.heroHeading}
+          description={homepage?.heroDescription}
+          ctaText={homepage?.ctaText}
+          ctaLink={homepage?.ctaLink}
+          heroImageUrl={homepage?.heroImageUrl}
+          heroImageAlt={homepage?.heroImage?.alt}
+        />
+
+        <Stats
+          heading={homepage?.statsHeading}
+          description={homepage?.statsDescription}
+          stats={homepage?.stats}
+        />
+
+        <Services
+          cards={services?.cards}
+        />
+		<HowWeWork
+  			heading={howWeWork?.sectionTitle}
+  			description={howWeWork?.sectionDescription}
+  			steps={howWeWork?.steps}
+		/>
+		<SuccessStories
+  			heading={successStories?.sectionTitle}
+  			description={successStories?.sectionDescription}
+  			stories={successStories?.stories}
+  			moreStoriesIcon={successStories?.moreStoriesIcon}
+  			moreStoriesLabel={successStories?.moreStoriesLabel}
+  			moreStoriesTitle={successStories?.moreStoriesTitle}
+  			moreStoriesLinkText={successStories?.moreStoriesLinkText}
+  			moreStoriesLinkUrl={successStories?.moreStoriesLinkUrl}
+		/>
+		<TrustedBrands
+  			sectionTitle={trustedBrands?.sectionTitle}
+  			brands={trustedBrands?.brands}
+  			animationSpeed={trustedBrands?.animationSpeed}
+		/>
+		<ClientAppreciation
+  			sectionTitle={clientAppreciation?.sectionTitle}
+  			autoplayEnabled={clientAppreciation?.autoplayEnabled}
+  			autoplayInterval={clientAppreciation?.autoplayInterval}
+  			testimonials={clientAppreciation?.testimonials}
+		/>
+		<WhoWeWorkWith
+  			sectionTitle={whoWeWorkWith?.sectionTitle}
+  			sectionDescription={whoWeWorkWith?.sectionDescription}
+  			audiences={whoWeWorkWith?.audiences}
+		/>
+		{faq && (
+  			<FAQ
+    			sectionTitle={faq.sectionTitle}
+    			categories={faq.categories}
+    			buttonText={faq.buttonText}
+    			buttonUrl={faq.buttonUrl}
+  			/>
+		)}
+		{readyToMoveFaster && (
+  			<ReadyToMoveFaster
+    			sectionTitle={readyToMoveFaster.sectionTitle}
+    			description={readyToMoveFaster.description}
+    			backgroundImage={readyToMoveFaster.backgroundImage}
+    			overlayColor={readyToMoveFaster.overlayColor}
+    			overlayOpacity={readyToMoveFaster.overlayOpacity}
+    			buttonText={readyToMoveFaster.buttonText}
+    			buttonUrl={readyToMoveFaster.buttonUrl}
+    			sectionPadding={readyToMoveFaster.sectionPadding}
+    			headingColor={readyToMoveFaster.headingColor}
+    			descriptionColor={readyToMoveFaster.descriptionColor}
+    			buttonColor={readyToMoveFaster.buttonColor}
+    			buttonTextColor={readyToMoveFaster.buttonTextColor}
+  			/>
+		)}
+		{footer && (
+  			<Footer
+    			brandLogo={footer.brandLogo}
+    			brandDescription={footer.brandDescription}
+    			partnerLogo={footer.partnerLogo}
+    			linkColumns={footer.linkColumns}
+    			contactTitle={footer.contactTitle}
+    			email={footer.email}
+    			phone={footer.phone}
+    			address={footer.address}
+    			socialTitle={footer.socialTitle}
+    			socialLinks={footer.socialLinks}
+    			bottomLinks={footer.bottomLinks}
+    			copyrightText={footer.copyrightText}
+  			/>
+		)}
+		
+      </>
+    )}
+  </main>
+</Layout>

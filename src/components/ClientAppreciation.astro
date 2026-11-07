@@ -1,0 +1,385 @@
+
+---
+import { urlFor } from '../lib/sanity'
+
+interface Testimonial {
+  companyName: string
+  country?: string
+  testimonial: string
+  personName: string
+  personRole?: string
+  profileImage?: {
+    asset?: {
+      _ref: string
+      _type: string
+    }
+    alt?: string
+    crop?: any
+    hotspot?: any
+  }
+  order?: number
+}
+
+interface Props {
+  sectionTitle?: string
+  autoplayEnabled?: boolean
+  autoplayInterval?: number
+  testimonials?: Testimonial[]
+}
+
+const {
+  sectionTitle,
+  autoplayEnabled = false,
+  autoplayInterval = 5,
+  testimonials = [],
+} = Astro.props
+
+const sortedTestimonials = [...testimonials].sort(
+  (a, b) => (a.order ?? 0) - (b.order ?? 0)
+)
+---
+
+{sortedTestimonials.length > 0 && (
+  <section
+    class="client-appreciation"
+    data-autoplay={autoplayEnabled}
+    data-interval={autoplayInterval}
+  >
+    <div class="testimonial-container">
+
+      <h2 class="testimonial-heading">{sectionTitle}</h2>
+
+      <div class="testimonial-slider">
+        {sortedTestimonials.map((item, index) => (
+          <article
+            class={`testimonial-slide ${index === 0 ? 'active' : ''}`}
+            aria-hidden={index !== 0 ? 'true' : 'false'}
+          >
+            <div class="testimonial-profile">
+              {item.profileImage?.asset && (
+                <img
+                  src={urlFor(item.profileImage)
+                    .width(300)
+                    .height(300)
+                    .fit('crop')
+                    .url()}
+                  alt={item.profileImage.alt ?? item.personName}
+                  loading={index === 0 ? 'eager' : 'lazy'}
+                />
+              )}
+            </div>
+
+            <div class="testimonial-content">
+
+              <p class="testimonial-company">
+                {item.companyName}
+                {item.country && ` · ${item.country}`}
+              </p>
+
+              <blockquote class="testimonial-text">
+                “{item.testimonial}”
+              </blockquote>
+
+              <div class="testimonial-person">
+                <h3>{item.personName}</h3>
+
+                {item.personRole && (
+                  <p>{item.personRole}</p>
+                )}
+              </div>
+
+            </div>
+          </article>
+        ))}
+      </div>
+
+      {sortedTestimonials.length > 1 && (
+        <div class="testimonial-dots" aria-label="Choose a testimonial">
+          {sortedTestimonials.map((item, index) => (
+            <button
+              type="button"
+              class={`testimonial-dot ${index === 0 ? 'active' : ''}`}
+              aria-label={`Show testimonial ${index + 1}`}
+              aria-current={index === 0 ? 'true' : 'false'}
+              data-index={index}
+            />
+          ))}
+        </div>
+      )}
+
+    </div>
+  </section>
+)}
+
+<style>
+  .client-appreciation {
+    width: 100%;
+    background: #f7f8fa;
+    padding: 75px 24px 80px;
+    box-sizing: border-box;
+  }
+
+  .testimonial-container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .testimonial-heading {
+    text-align: center;
+    color: #07518d;
+    font-size: 40px;
+    font-weight: 400;
+    line-height: 1.3;
+    margin: 0 0 95px;
+  }
+
+  .testimonial-slider {
+    position: relative;
+  }
+
+  /* Main testimonial layout */
+  .testimonial-slide {
+    display: none;
+    grid-template-columns: 150px minmax(0, 1fr);
+    gap: 35px;
+
+    /* FIX: Align image with the beginning of testimonial content */
+    align-items: start;
+
+    max-width: 1100px;
+    margin: 0 auto;
+    animation: testimonialFade 0.4s ease;
+  }
+
+  .testimonial-slide.active {
+    display: grid;
+  }
+
+  /* Profile image */
+  .testimonial-profile {
+    width: 135px;
+    height: 135px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #e5eaf0;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+
+    /* FIX: Position image beside company name */
+    margin-top: 0;
+    flex-shrink: 0;
+  }
+
+  .testimonial-profile img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Company name */
+  .testimonial-company {
+    margin: 0 0 30px;
+    color: #07518d;
+    font-size: 15px;
+    letter-spacing: 1.1px;
+    font-weight: 500;
+  }
+
+  /* Testimonial text */
+  .testimonial-text {
+    margin: 0;
+    color: #202b38;
+    font-size: 19px;
+    line-height: 1.8;
+    font-weight: 400;
+  }
+
+  /* Person information */
+  .testimonial-person {
+    margin-top: 45px;
+  }
+
+  .testimonial-person h3 {
+    margin: 0 0 8px;
+    font-size: 24px;
+    font-weight: 400;
+    line-height: 1.4;
+    color: #17212d;
+  }
+
+  .testimonial-person p {
+    margin: 0;
+    color: #273747;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+
+  /* Navigation dots */
+  .testimonial-dots {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 13px;
+    margin-top: 60px;
+  }
+
+  .testimonial-dot {
+    border: none;
+    padding: 0;
+    width: 12px;
+    height: 12px;
+    border-radius: 20px;
+    background: #cbd7e4;
+    cursor: pointer;
+    transition:
+      width 0.3s ease,
+      background 0.3s ease;
+  }
+
+  .testimonial-dot.active {
+    width: 39px;
+    background: #07518d;
+  }
+
+  .testimonial-dot:hover {
+    background: #07518d;
+  }
+
+  @keyframes testimonialFade {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Tablet and mobile */
+  @media (max-width: 768px) {
+    .client-appreciation {
+      padding: 55px 22px 65px;
+    }
+
+    .testimonial-heading {
+      font-size: 30px;
+      margin-bottom: 50px;
+    }
+
+    .testimonial-slide {
+      grid-template-columns: 1fr;
+      gap: 25px;
+      align-items: start;
+    }
+
+    .testimonial-profile {
+      width: 100px;
+      height: 100px;
+    }
+
+    .testimonial-company {
+      margin-bottom: 20px;
+      font-size: 13px;
+    }
+
+    .testimonial-text {
+      font-size: 17px;
+      line-height: 1.7;
+    }
+
+    .testimonial-person {
+      margin-top: 25px;
+    }
+
+    .testimonial-person h3 {
+      font-size: 21px;
+    }
+
+    .testimonial-person p {
+      font-size: 15px;
+    }
+
+    .testimonial-dots {
+      margin-top: 40px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .testimonial-slide {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  document.querySelectorAll('.client-appreciation').forEach((section) => {
+    const slides = Array.from(
+      section.querySelectorAll('.testimonial-slide')
+    )
+
+    const dots = Array.from(
+      section.querySelectorAll('.testimonial-dot')
+    )
+
+    if (slides.length <= 1) return
+
+    const autoplayEnabled =
+      section.dataset.autoplay === 'true'
+
+    const interval =
+      Number(section.dataset.interval) || 5
+
+    let currentIndex = 0
+    let timer: ReturnType<typeof setInterval> | undefined
+
+    function showSlide(index: number) {
+      currentIndex = index
+
+      slides.forEach((slide, i) => {
+        slide.classList.toggle('active', i === index)
+
+        slide.setAttribute(
+          'aria-hidden',
+          String(i !== index)
+        )
+      })
+
+      dots.forEach((dot, i) => {
+        dot.classList.toggle('active', i === index)
+
+        dot.setAttribute(
+          'aria-current',
+          String(i === index)
+        )
+      })
+    }
+
+    function stopAutoplay() {
+      if (timer) {
+        clearInterval(timer)
+        timer = undefined
+      }
+    }
+
+    function startAutoplay() {
+      stopAutoplay()
+
+      if (!autoplayEnabled) return
+
+      timer = setInterval(() => {
+        showSlide((currentIndex + 1) % slides.length)
+      }, Math.max(interval, 1) * 1000)
+    }
+
+    dots.forEach((dot, index) => {
+      dot.addEventListener('click', () => {
+        stopAutoplay()
+        showSlide(index)
+      })
+    })
+
+    startAutoplay()
+  })
+</script>

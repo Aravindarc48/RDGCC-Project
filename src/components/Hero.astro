@@ -1,0 +1,138 @@
+
+---
+interface Props {
+  eyebrow?: string
+  heading?: string
+  description?: string
+  ctaText?: string
+  ctaLink?: string
+  heroImageUrl?: string
+  heroImageAlt?: string
+}
+
+const {
+  eyebrow,
+  heading,
+  description,
+  ctaText,
+  ctaLink,
+  heroImageUrl,
+  heroImageAlt,
+} = Astro.props
+---
+
+<section class="hero-section relative isolate overflow-hidden bg-white">
+  <!-- Background decoration -->
+  <div aria-hidden="true" class="pointer-events-none absolute inset-0 -z-10">
+    <div class="absolute right-[-10%] top-[10%] h-[500px] w-[500px]
+                rounded-full bg-blue-100/60 blur-3xl">
+    </div>
+
+    <div class="absolute bottom-[-20%] left-[35%] h-[350px] w-[350px]
+                rounded-full bg-gray-100 blur-3xl">
+    </div>
+  </div>
+
+  <!-- Hero content -->
+  <div class="hero-container mx-auto grid min-h-[580px] w-full max-w-7xl
+              items-center gap-12 px-6 py-12 md:px-12
+              lg:min-h-[650px] lg:grid-cols-2">
+
+    <div class="relative z-10 max-w-3xl">
+      {eyebrow && (
+        <p class="mb-6 text-xs font-semibold uppercase tracking-[0.25em]
+                  text-blue-700 sm:text-sm">
+          {eyebrow}
+        </p>
+      )}
+
+      <h1 class="hero-heading text-4xl font-semibold leading-[1.12]
+                 tracking-tight text-blue-900
+                 sm:text-5xl md:text-6xl lg:text-7xl">
+        {heading}
+      </h1>
+
+      {description && (
+        <p class="hero-description mt-7 max-w-xl text-base leading-8 text-gray-600 sm:text-lg">
+          {description}
+        </p>
+      )}
+
+      {ctaText && ctaLink && (
+        <a
+          href={ctaLink}
+          class="hero-button mt-9 inline-flex items-center gap-4 rounded-full
+                 bg-blue-900 px-8 py-4 text-sm font-semibold
+                 text-white shadow-lg transition duration-300
+                 hover:-translate-y-1 hover:bg-blue-800
+                 hover:shadow-xl focus-visible:outline-2
+                 focus-visible:outline-offset-4
+                 focus-visible:outline-blue-800"
+        >
+          {ctaText}
+          <span aria-hidden="true" class="text-lg">→</span>
+        </a>
+      )}
+    </div>
+
+    <!-- Sanity CMS Hero Image -->
+    <div class="relative mx-auto w-full max-w-lg">
+      {heroImageUrl ? (
+        <img
+          src={heroImageUrl}
+          alt={heroImageAlt}
+          width="1200"
+          height="1200"
+          loading="eager"
+          fetchpriority="high"
+          class="h-auto w-full rounded-3xl object-cover"
+        />
+      ) : (
+        <div class="flex aspect-square items-center justify-center
+                    rounded-3xl bg-blue-50 text-blue-900">
+          <p class="text-sm">Hero image coming soon</p>
+        </div>
+      )}
+    </div>
+
+  </div>
+</section>
+
+<style>
+  /* Mobile layout */
+  @media (max-width: 767px) {
+    .hero-section {
+      padding-top: 0;
+    }
+
+    .hero-container {
+      min-height: auto;
+      grid-template-columns: 1fr;
+      gap: 0;
+      padding: 0px 24px 45px;
+    }
+
+    .hero-heading {
+      font-size: 36px;
+      font-weight: 500;
+      line-height: 1.2;
+      letter-spacing: -0.035em;
+    }
+
+    .hero-description {
+      margin-top: 25px;
+      font-size: 16px;
+      line-height: 1.8;
+    }
+
+    .hero-button {
+      margin-top: 35px;
+      padding: 18px 32px;
+      font-size: 14px;
+    }
+
+    .hero-container > div:last-child {
+      margin-top: 45px;
+    }
+  }
+</style>

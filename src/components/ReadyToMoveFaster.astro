@@ -1,0 +1,190 @@
+
+---
+import { urlFor } from '../lib/sanity'
+
+interface Props {
+  sectionTitle?: string
+  description?: string
+  backgroundImage?: {
+    asset?: {
+      _ref?: string
+      _type?: string
+    }
+    alt?: string
+    crop?: any
+    hotspot?: any
+  }
+  overlayColor?: string
+  overlayOpacity?: number
+  buttonText?: string
+  buttonUrl?: string
+  sectionPadding?: number
+  headingColor?: string
+  descriptionColor?: string
+  buttonColor?: string
+  buttonTextColor?: string
+}
+
+const {
+  sectionTitle,
+  description,
+  backgroundImage,
+  overlayColor = '#001B36',
+  overlayOpacity = 0.65,
+  buttonText,
+  buttonUrl,
+  sectionPadding = 60,
+  headingColor = '#FFFFFF',
+  descriptionColor = '#FFFFFF',
+  buttonColor = '#064F8C',
+  buttonTextColor = '#FFFFFF',
+} = Astro.props
+
+const backgroundImageUrl = backgroundImage?.asset
+  ? urlFor(backgroundImage).width(1920).quality(85).url()
+  : ''
+---
+
+<section
+  class="ready-section"
+  style={`
+    --overlay-color: ${overlayColor};
+    --overlay-opacity: ${overlayOpacity};
+    --section-padding: ${sectionPadding}px;
+    --heading-color: ${headingColor};
+    --description-color: ${descriptionColor};
+    --button-color: ${buttonColor};
+    --button-text-color: ${buttonTextColor};
+    ${backgroundImageUrl
+      ? `--background-image: url("${backgroundImageUrl}");`
+      : ''}
+  `}
+>
+  <div class="ready-content">
+    {sectionTitle && <h2>{sectionTitle}</h2>}
+
+    {description && <p>{description}</p>}
+
+    {buttonText && buttonUrl && (
+      <a href={buttonUrl} class="ready-button">
+        <span>{buttonText}</span>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M5 12h14" />
+          <path d="m12 5 7 7-7 7" />
+        </svg>
+      </a>
+    )}
+  </div>
+</section>
+
+<style>
+.ready-section {
+  position: relative;
+  width: 100%;
+  padding: var(--section-padding, 60px) 20px;
+
+  background-image: var(--background-image);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.ready-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+
+  background: var(--overlay-color, #001B36);
+  opacity: var(--overlay-opacity, 0.65);
+
+  pointer-events: none;
+}
+
+  .ready-content {
+    position: relative;
+    z-index: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .ready-content h2 {
+    margin: 0 0 28px;
+    color: var(--heading-color, #FFFFFF);
+    font-size: 44px;
+    font-weight: 500;
+    line-height: 1.3;
+  }
+
+  .ready-content p {
+    margin: 0 auto 55px;
+    max-width: 1000px;
+    color: var(--description-color, #FFFFFF);
+    font-size: 20px;
+    line-height: 1.6;
+  }
+
+  .ready-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    min-width: 220px;
+    padding: 15px 30px;
+    border-radius: 50px;
+    background: var(--button-color, #064F8C);
+    color: var(--button-text-color, #FFFFFF);
+    text-decoration: none;
+    font-size: 20px;
+    font-weight: 600;
+    transition: transform 0.3s ease, background 0.3s ease;
+  }
+
+  .ready-button:hover {
+    transform: translateY(-3px);
+  }
+
+  .ready-button svg {
+    transition: transform 0.3s ease;
+  }
+
+  .ready-button:hover svg {
+    transform: translateX(5px);
+  }
+
+  @media (max-width: 768px) {
+    .ready-section {
+      padding: 45px 20px;
+    }
+
+    .ready-content h2 {
+      font-size: 32px;
+      margin-bottom: 20px;
+    }
+
+    .ready-content p {
+      font-size: 16px;
+      margin-bottom: 35px;
+    }
+
+    .ready-button {
+      font-size: 16px;
+      min-width: 180px;
+      padding: 13px 24px;
+    }
+  }
+</style>

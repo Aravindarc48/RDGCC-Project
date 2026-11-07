@@ -1,0 +1,311 @@
+
+---
+import { urlFor } from '../lib/sanity'
+
+interface Audience {
+  title?: string
+  description?: string
+  order?: number
+  image?: {
+    asset?: {
+      _ref?: string
+      _type?: string
+    }
+    alt?: string
+    crop?: {
+      top: number
+      bottom: number
+      left: number
+      right: number
+    }
+    hotspot?: {
+      x: number
+      y: number
+      width: number
+      height: number
+    }
+  }
+}
+
+interface Props {
+  sectionTitle?: string
+  sectionDescription?: string
+  audiences?: Audience[]
+}
+
+const {
+  sectionTitle,
+  sectionDescription,
+  audiences = [],
+} = Astro.props
+
+const sortedAudiences = [...audiences].sort(
+  (a, b) => (a.order ?? 0) - (b.order ?? 0)
+)
+---
+
+{sortedAudiences.length > 0 && (
+  <section class="who-we-work-with">
+    <div class="audience-container">
+
+      <header class="audience-header">
+        {sectionTitle && <h2>{sectionTitle}</h2>}
+
+        {sectionDescription && (
+          <p>{sectionDescription}</p>
+        )}
+      </header>
+
+      <div class="audience-list">
+        {sortedAudiences.map((audience, index) => (
+          <article
+            class={`audience-row ${index % 2 === 1 ? 'reverse' : ''}`}
+          >
+            <div class="audience-image">
+              {audience.image?.asset && (
+                <img
+                  src={urlFor(audience.image)
+                    .width(700)
+                    .height(700)
+                    .fit('crop')
+                    .url()}
+                  alt={audience.image.alt ?? audience.title ?? ''}
+                  loading="lazy"
+                />
+              )}
+            </div>
+
+            <div class="audience-content">
+              {audience.title && (
+                <h3>{audience.title}</h3>
+              )}
+
+              {audience.description && (
+                <p>{audience.description}</p>
+              )}
+            </div>
+          </article>
+        ))}
+      </div>
+
+    </div>
+  </section>
+)}
+
+<style>
+  .who-we-work-with {
+    width: 100%;
+    padding: 35px 24px 80px;
+    background: #ffffff;
+    box-sizing: border-box;
+  }
+
+  .audience-container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  /* Section heading */
+
+  .audience-header {
+    text-align: center;
+    max-width: 850px;
+    margin: 0 auto 95px;
+  }
+
+  .audience-header h2 {
+    margin: 0 0 25px;
+    color: #07518d;
+    font-size: 42px;
+    font-weight: 500;
+    line-height: 1.3;
+  }
+
+  .audience-header p {
+    margin: 0;
+    color: #202b38;
+    font-size: 18px;
+    line-height: 1.7;
+  }
+
+  /* Audience list */
+
+  .audience-list {
+    display: flex;
+    flex-direction: column;
+    gap: 45px;
+  }
+
+  .audience-row {
+    display: grid;
+    grid-template-columns: 0.85fr 1.4fr;
+    align-items: center;
+    gap: 65px;
+    min-height: 310px;
+    padding: 0 10px;
+  }
+
+  /* Image */
+
+  .audience-image {
+    width: 310px;
+    max-width: 100%;
+    aspect-ratio: 1 / 1;
+    justify-self: center;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #f1f3f5;
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.12);
+  }
+
+  .audience-image img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+  }
+
+  .audience-image:hover img {
+    transform: scale(1.04);
+  }
+
+  /* Text */
+
+  .audience-content {
+    width: 100%;
+    max-width: 700px;
+  }
+
+  .audience-content h3 {
+    margin: 0 0 20px;
+    color: #07518d;
+    font-size: 24px;
+    font-weight: 500;
+    line-height: 1.4;
+  }
+
+  .audience-content p {
+    margin: 0;
+    color: #202b38;
+    font-size: 17px;
+    line-height: 1.7;
+  }
+
+  /* Alternate rows */
+
+  .audience-row.reverse {
+    grid-template-columns: 1.4fr 0.85fr;
+  }
+
+  .audience-row.reverse .audience-image {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .audience-row.reverse .audience-content {
+    grid-column: 1;
+    grid-row: 1;
+    justify-self: end;
+    text-align: right;
+  }
+
+  /* Tablet */
+
+  @media (max-width: 900px) {
+    .who-we-work-with {
+      padding: 35px 24px 65px;
+    }
+
+    .audience-header {
+      margin-bottom: 65px;
+    }
+
+    .audience-row {
+      grid-template-columns: 0.9fr 1.2fr;
+      gap: 35px;
+      min-height: 250px;
+    }
+
+    .audience-row.reverse {
+      grid-template-columns: 1.2fr 0.9fr;
+    }
+
+    .audience-image {
+      width: 250px;
+    }
+
+    .audience-content h3 {
+      font-size: 22px;
+    }
+
+    .audience-content p {
+      font-size: 16px;
+    }
+  }
+
+  /* Mobile */
+
+  @media (max-width: 650px) {
+    .who-we-work-with {
+      padding: 40px 20px 55px;
+    }
+
+    .audience-header {
+      margin-bottom: 50px;
+    }
+
+    .audience-header h2 {
+      font-size: 30px;
+    }
+
+    .audience-header p {
+      font-size: 16px;
+    }
+
+    .audience-list {
+      gap: 55px;
+    }
+
+    .audience-row,
+    .audience-row.reverse {
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+      min-height: auto;
+      padding: 0;
+    }
+
+    .audience-image {
+      width: 250px;
+      max-width: 100%;
+      flex-shrink: 0;
+    }
+
+    .audience-content,
+    .audience-row.reverse .audience-content {
+      width: 100%;
+      text-align: center;
+      order: 2;
+    }
+
+    .audience-row.reverse .audience-image {
+      order: 1;
+    }
+
+    .audience-content h3 {
+      font-size: 21px;
+      margin-bottom: 15px;
+    }
+
+    .audience-content p {
+      font-size: 16px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .audience-image img {
+      transition: none;
+    }
+  }
+</style>

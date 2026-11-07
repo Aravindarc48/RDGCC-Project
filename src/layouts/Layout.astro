@@ -1,0 +1,92 @@
+
+---
+import Navbar from '../components/navbar/Navbar.astro'
+import '../styles/global.css'
+import { sanityClient } from '../lib/sanity'
+
+interface Navigation {
+  logoText?: string
+  logoHref?: string
+  ctaText?: string
+  ctaLink?: string
+  items?: Array<{
+    label: string
+    href?: string
+    menuType?: string
+    groups?: Array<{
+      label?: string
+      href?: string
+      links?: Array<{
+        label: string
+        href: string
+      }>
+    }>
+  }>
+}
+
+interface Props {
+  title?: string
+  description?: string
+}
+
+const { title, description } = Astro.props
+
+const navigationQuery = `*[_type == "navigation"][0]{
+  logoText,
+  logoHref,
+  ctaText,
+  ctaLink,
+  items[]{
+    label,
+    href,
+    menuType,
+    groups[]{
+      label,
+      href,
+      links[]{
+        label,
+        href
+      }
+    }
+  }
+}`
+
+let navigation: Navigation | null = null
+
+try {
+  navigation = await sanityClient.fetch<Navigation | null>(
+    navigationQuery
+  )
+} catch (error) {
+  console.error('Failed to load navigation:', error)
+}
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>{title ?? 'RightDirect | Digital Growth'}</title>
+
+    <meta
+      name="description"
+      content={description ?? 'RightDirect digital solutions for growing companies.'}
+    />
+  </head>
+
+  <body>
+    <Navbar navigation={navigation} />
+
+    <div class="page-content">
+      <slot />
+    </div>
+  </body>
+</html>
+
+<style>
+  .page-content {
+    padding-top: 100px;
+  }
+</style>

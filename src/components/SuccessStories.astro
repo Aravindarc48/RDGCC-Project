@@ -1,0 +1,440 @@
+---
+import { urlFor } from '../lib/sanity'
+
+interface Story {
+  industry?: string
+  location?: string
+  clientName?: string
+  image?: {
+    asset?: {
+      _ref?: string
+      _type?: string
+    }
+    alt?: string
+    crop?: {
+      top: number
+      bottom: number
+      left: number
+      right: number
+    }
+    hotspot?: {
+      x: number
+      y: number
+      width: number
+      height: number
+    }
+  }
+  icon?: string
+  title?: string
+  description?: string
+  linkText?: string
+  linkUrl?: string
+  featured?: boolean
+}
+
+interface Props {
+  heading?: string
+  description?: string
+  stories?: Story[]
+  moreStoriesIcon?: string
+  moreStoriesLabel?: string
+  moreStoriesTitle?: string
+  moreStoriesLinkText?: string
+  moreStoriesLinkUrl?: string
+}
+
+const {
+  heading,
+  description,
+  stories = [],
+  moreStoriesIcon,
+  moreStoriesLabel,
+  moreStoriesTitle,
+  moreStoriesLinkText,
+  moreStoriesLinkUrl,
+} = Astro.props
+
+const iconPaths: Record<string, string> = {
+  code: 'M8 17 3 12l5-5 M16 7l5 5-5 5 M14 4l-4 16',
+  'briefcase-business':
+    'M16 20V4H8v16 M3 7h18v13H3z M3 11h18',
+  'chart-line':
+    'M3 3v18h18 M7 14l4-4 4 4 6-7',
+  users:
+    'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2 M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8 M22 21v-2a4 4 0 0 0-3-3.87 M16 3.13a4 4 0 0 1 0 7.75',
+  'shopping-cart':
+    'M3 3h2l2.4 12.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 7H6 M10 21a1 1 0 1 0 0-2 1 1 0 0 0 0 2 M19 21a1 1 0 1 0 0-2 1 1 0 0 0 0 2',
+  'arrow-up-right': 'M7 17 17 7 M7 7h10v10',
+}
+
+const getIconPath = (name?: string) => {
+  return name ? iconPaths[name] : undefined
+}
+---
+
+<section class="success-stories">
+  <div class="success-header">
+    <h2>{heading}</h2>
+    <p>{description}</p>
+  </div>
+
+  <div class="stories-grid">
+    {stories.map((story) => (
+      <article class="story-card">
+
+        <div class="story-content">
+
+          <!-- Industry and Location -->
+          <div class="story-meta">
+            <span>{story.industry}</span>
+            <span>{story.location}</span>
+          </div>
+
+          <!-- Client Name -->
+          <p class="client-name">{story.clientName}</p>
+
+          <!-- Image below client name -->
+          {story.image?.asset && (
+            <div class="story-image">
+              <img
+                src={urlFor(story.image)
+                  .width(900)
+                  .height(500)
+                  .fit('crop')
+                  .url()}
+                alt={story.image.alt ?? story.clientName ?? ''}
+                loading="lazy"
+              />
+            </div>
+          )}
+
+          <!-- Circular Blue Icon -->
+          <div class="story-icon">
+            {getIconPath(story.icon) && (
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.6"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d={getIconPath(story.icon)} />
+              </svg>
+            )}
+          </div>
+
+          <!-- Story Title -->
+          <h3>{story.title}</h3>
+
+          <!-- Story Description -->
+          <p class="story-description">{story.description}</p>
+
+          <!-- Case Study Link -->
+          <a class="story-link" href={story.linkUrl ?? '#'}>
+            {story.linkText}
+            <span class="link-arrow" aria-hidden="true"></span>
+          </a>
+
+        </div>
+      </article>
+    ))}
+
+    <!-- More Stories Card -->
+    <a class="more-stories-card" href={moreStoriesLinkUrl ?? '#'}>
+      <div class="more-stories-icon">
+        {getIconPath(moreStoriesIcon) && (
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.6"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d={getIconPath(moreStoriesIcon)} />
+          </svg>
+        )}
+      </div>
+
+      <span class="more-label">{moreStoriesLabel}</span>
+
+      <h3>{moreStoriesTitle}</h3>
+
+      <span class="more-link">
+        {moreStoriesLinkText}
+        <span class="link-arrow" aria-hidden="true"></span>
+      </span>
+    </a>
+  </div>
+</section>
+
+<style>
+  .success-stories {
+    padding: 100px 24px;
+    background: #f6f8fb;
+  }
+
+  .success-header {
+    max-width: 1050px;
+    margin: 0 auto 64px;
+    text-align: center;
+  }
+
+  .success-header h2 {
+    margin: 0 0 20px;
+    color: #064f8c;
+    font-size: 38px;
+    font-weight: 500;
+  }
+
+  .success-header p {
+    margin: 0;
+    color: #414141;
+    font-size: 17px;
+    line-height: 1.7;
+  }
+
+  .stories-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 28px;
+    max-width: 1400px;
+    margin: 0 auto;
+    align-items: stretch;
+  }
+
+  .story-card {
+    display: flex;
+    overflow: hidden;
+    border-radius: 15px;
+    background: #fff;
+    border: 1px solid #e7edf3;
+    box-shadow: 0 5px 20px rgba(20, 50, 80, 0.04);
+    transition:
+      transform 0.3s ease,
+      box-shadow 0.3s ease;
+  }
+
+  .story-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 18px 38px rgba(20, 50, 80, 0.12);
+  }
+
+  .story-content {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 28px;
+  }
+
+  /* Industry and Location */
+  .story-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    color: #064f8c;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  /* Client Name */
+  .client-name {
+    margin: 10px 0 0;
+    color: #064f8c;
+    font-size: 22px;
+    font-weight: 600;
+  }
+
+  /* Image with padding and rounded corners */
+  .story-image {
+    height: 205px;
+    margin-top: 24px;
+    overflow: hidden;
+    border-radius: 9px;
+    background: #e9eef4;
+  }
+
+  .story-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.5s ease;
+  }
+
+  .story-card:hover .story-image img {
+    transform: scale(1.04);
+  }
+
+  /* Blue circular icon with white artwork */
+  .story-icon {
+    width: 42px;
+    height: 42px;
+    min-width: 42px;
+    margin-top: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #064f8c;
+    color: #ffffff;
+  }
+
+  .story-icon svg {
+    width: 23px;
+    height: 23px;
+  }
+
+  /* Story Title */
+  .story-content h3 {
+    margin: 20px 0 12px;
+    color: #064f8c;
+    font-size: 22px;
+    line-height: 1.4;
+    font-weight: 500;
+  }
+
+  /* Story Description */
+  .story-description {
+    margin: 0;
+    color: #424242;
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
+  /* Case Study Link */
+  .story-link,
+  .more-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: auto;
+    padding-top: 24px;
+    color: #064f8c;
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .link-arrow {
+    width: 8px;
+    height: 8px;
+    border-top: 1.5px solid currentColor;
+    border-right: 1.5px solid currentColor;
+    transform: rotate(45deg);
+    transition: transform 0.3s ease;
+  }
+
+  .story-link:hover .link-arrow,
+  .more-link:hover .link-arrow {
+    transform: translateX(4px) rotate(45deg);
+  }
+
+  /* More Stories Card */
+  .more-stories-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 420px;
+    padding: 40px;
+    border-radius: 15px;
+    background: #064f8c;
+    color: white;
+    text-decoration: none;
+    transition:
+      transform 0.3s ease,
+      background 0.3s ease;
+  }
+
+  .more-stories-card:hover {
+    transform: translateY(-6px);
+    background: #053e70;
+  }
+
+  .more-stories-icon {
+    width: 58px;
+    height: 58px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.12);
+    color: white;
+  }
+
+  .more-stories-icon svg {
+    width: 26px;
+    height: 26px;
+  }
+
+  .more-label {
+    margin-top: 32px;
+    font-size: 14px;
+    font-weight: 500;
+    opacity: 0.85;
+  }
+
+  .more-stories-card h3 {
+    margin: 14px 0 0;
+    max-width: 320px;
+    color: white;
+    font-size: 32px;
+    font-weight: 500;
+    line-height: 1.35;
+  }
+
+  .more-link {
+    color: white;
+    margin-top: 24px;
+  }
+
+  /* Tablet */
+  @media (max-width: 1050px) {
+    .stories-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  /* Mobile */
+  @media (max-width: 650px) {
+    .success-stories {
+      padding: 65px 18px;
+    }
+
+    .success-header {
+      margin-bottom: 40px;
+    }
+
+    .success-header h2 {
+      font-size: 30px;
+    }
+
+    .success-header p {
+      font-size: 15px;
+    }
+
+    .stories-grid {
+      grid-template-columns: 1fr;
+      gap: 22px;
+    }
+
+    .story-image {
+      height: 205px;
+    }
+
+    .story-content {
+      padding: 24px;
+    }
+
+    .more-stories-card {
+      min-height: 320px;
+      padding: 30px;
+    }
+  }
+</style>

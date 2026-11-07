@@ -1,0 +1,203 @@
+
+---
+import { urlFor } from '../lib/sanity'
+
+interface Brand {
+  brandName?: string
+  logo?: {
+    asset?: {
+      _ref?: string
+      _type?: string
+    }
+    alt?: string
+    crop?: {
+      top: number
+      bottom: number
+      left: number
+      right: number
+    }
+    hotspot?: {
+      x: number
+      y: number
+      width: number
+      height: number
+    }
+  }
+  websiteUrl?: string
+  order?: number
+}
+
+interface Props {
+  sectionTitle?: string
+  brands?: Brand[]
+  animationSpeed?: number
+}
+
+const {
+  sectionTitle,
+  brands = [],
+  animationSpeed = 30,
+} = Astro.props
+
+const sortedBrands = [...brands].sort(
+  (a, b) => (a.order ?? 0) - (b.order ?? 0)
+)
+
+// Duplicate logos for seamless continuous animation.
+const duplicatedBrands = [...sortedBrands, ...sortedBrands]
+---
+
+<section class="trusted-brands">
+  <div class="trusted-header">
+    <h2>{sectionTitle}</h2>
+  </div>
+
+  {brands.length > 0 && (
+    <div class="logo-slider">
+      <div
+        class="logo-track"
+        style={`--animation-duration: ${Math.max(animationSpeed, 5)}s`}
+      >
+        {duplicatedBrands.map((brand, index) => (
+          <a
+            class="brand-logo"
+            href={brand.websiteUrl ?? '#'}
+            target={brand.websiteUrl ? '_blank' : undefined}
+            rel={brand.websiteUrl ? 'noopener noreferrer' : undefined}
+            aria-label={brand.brandName}
+            key={`${brand.brandName}-${index}`}
+          >
+            {brand.logo?.asset && (
+              <img
+                src={urlFor(brand.logo)
+                  .width(400)
+                  .fit('max')
+                  .url()}
+                alt={brand.logo.alt ?? brand.brandName ?? ''}
+                loading="lazy"
+              />
+            )}
+          </a>
+        ))}
+      </div>
+    </div>
+  )}
+</section>
+
+<style>
+  .trusted-brands {
+    width: 100%;
+    padding: 45px 0 55px;
+    background: #ffffff;
+    overflow: hidden;
+  }
+
+  .trusted-header {
+    text-align: center;
+    margin-bottom: 45px;
+    padding: 0 20px;
+  }
+
+  .trusted-header h2 {
+    margin: 0;
+    color: #064f8c;
+    font-size: 42px;
+    font-weight: 500;
+    line-height: 1.3;
+  }
+
+  .logo-slider {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .logo-track {
+    display: flex;
+    align-items: center;
+    width: max-content;
+    animation: logo-scroll var(--animation-duration, 30s) linear infinite;
+    will-change: transform;
+  }
+
+  .brand-logo {
+    flex: 0 0 250px;
+    width: 250px;
+    height: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 15px 30px;
+    box-sizing: border-box;
+    text-decoration: none;
+  }
+
+  .brand-logo img {
+    display: block;
+    max-width: 100%;
+    max-height: 65px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+
+    filter: grayscale(100%);
+    opacity: 0.65;
+
+    transition:
+      filter 0.35s ease,
+      opacity 0.35s ease,
+      transform 0.35s ease;
+  }
+
+  .brand-logo:hover img {
+    filter: grayscale(0%);
+    opacity: 1;
+    transform: scale(1.08);
+  }
+
+  /* Pause the logo animation when hovering over the strip */
+  .logo-slider:hover .logo-track {
+    animation-play-state: paused;
+  }
+
+  @keyframes logo-scroll {
+    from {
+      transform: translateX(0);
+    }
+
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .trusted-brands {
+      padding: 35px 0 45px;
+    }
+
+    .trusted-header {
+      margin-bottom: 30px;
+    }
+
+    .trusted-header h2 {
+      font-size: 30px;
+    }
+
+    .brand-logo {
+      flex-basis: 180px;
+      width: 180px;
+      height: 75px;
+      padding: 12px 22px;
+    }
+
+    .brand-logo img {
+      max-height: 50px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .logo-track {
+      animation-play-state: paused;
+    }
+  }
+</style>

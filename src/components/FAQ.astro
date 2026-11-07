@@ -1,0 +1,234 @@
+
+---
+interface FAQQuestion {
+  question: string
+  answer: string
+  linkText?: string
+  linkUrl?: string
+}
+
+interface FAQCategory {
+  categoryTitle: string
+  questions: FAQQuestion[]
+}
+
+interface Props {
+  sectionTitle?: string
+  categories?: FAQCategory[]
+  buttonText?: string
+  buttonUrl?: string
+}
+
+const {
+  sectionTitle,
+  categories = [],
+  buttonText,
+  buttonUrl,
+} = Astro.props
+
+const faqItems = categories.flatMap((category, categoryIndex) =>
+  (category.questions ?? []).map((item, questionIndex) => ({
+    ...item,
+    categoryIndex,
+    questionIndex,
+  }))
+)
+---
+
+<section class="faq-section">
+  <div class="faq-container">
+    <h1>{sectionTitle}</h1>
+
+    <div class="faq-categories">
+      {categories.map((category, categoryIndex) => (
+        <section class="faq-category">
+          <h2>{category.categoryTitle}</h2>
+
+          <div class="faq-list">
+            {category.questions?.map((item, questionIndex) => (
+              <details class="faq-item">
+                <summary>
+                  <span>{item.question}</span>
+                  <span class="faq-arrow" aria-hidden="true"></span>
+                </summary>
+
+                <div class="faq-answer">
+                  <p>{item.answer}</p>
+
+                  {item.linkText && item.linkUrl && (
+                    <a href={item.linkUrl} class="faq-link">
+                      {item.linkText}
+                      <span aria-hidden="true">›</span>
+                    </a>
+                  )}
+                </div>
+              </details>
+            ))}
+          </div>
+        </section>
+      ))}
+    </div>
+
+    {buttonText && buttonUrl && (
+      <a href={buttonUrl} class="faq-bottom-button">
+        {buttonText}
+      </a>
+    )}
+  </div>
+</section>
+
+<script>
+  const faqItems = document.querySelectorAll('.faq-item')
+
+  faqItems.forEach((item) => {
+    item.addEventListener('toggle', () => {
+      if (item.open) {
+        faqItems.forEach((otherItem) => {
+          if (otherItem !== item) {
+            otherItem.open = false
+          }
+        })
+      }
+    })
+  })
+</script>
+
+<style>
+  .faq-section {
+    background: #f7f8fa;
+    padding: 30px 20px 70px;
+    min-height: 100vh;
+  }
+
+  .faq-container {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .faq-container > h1 {
+    text-align: center;
+    color: #064f8c;
+    font-size: 42px;
+    font-weight: 500;
+    margin: 0 0 65px;
+  }
+
+  .faq-category {
+    margin-bottom: 18px;
+  }
+
+  .faq-category h2 {
+    display: none;
+  }
+
+  .faq-item {
+    background: #fff;
+    border: 1px solid #dfe7ef;
+    border-radius: 18px;
+    margin-bottom: 18px;
+    overflow: hidden;
+    transition: box-shadow 0.3s ease;
+  }
+
+  .faq-item[open] {
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.10);
+  }
+
+  .faq-item summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 25px 34px;
+    cursor: pointer;
+    list-style: none;
+    color: #064f8c;
+    font-size: 21px;
+    font-weight: 400;
+  }
+
+  .faq-item summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .faq-arrow {
+    width: 9px;
+    height: 9px;
+    border-right: 1.5px solid #222;
+    border-bottom: 1.5px solid #222;
+    transform: rotate(45deg);
+    transition: transform 0.25s ease;
+    flex-shrink: 0;
+    margin-right: 5px;
+  }
+
+  .faq-item[open] .faq-arrow {
+    transform: rotate(225deg);
+  }
+
+  .faq-answer {
+    padding: 25px 34px 35px;
+    border-top: 1px solid #edf0f4;
+    color: #222;
+    font-size: 16px;
+    line-height: 1.65;
+  }
+
+  .faq-answer p {
+    margin: 0 0 18px;
+  }
+
+  .faq-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    color: #064f8c;
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .faq-link:hover {
+    text-decoration: underline;
+  }
+
+  .faq-link span {
+    font-size: 24px;
+  }
+
+  .faq-bottom-button {
+    display: table;
+    margin: 65px auto 0;
+    padding: 13px 28px;
+    background: #064f8c;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 30px;
+    font-weight: 500;
+    transition: background 0.3s ease;
+  }
+
+  .faq-bottom-button:hover {
+    background: #033b6b;
+  }
+
+  @media (max-width: 768px) {
+    .faq-section {
+      padding: 30px 15px 50px;
+    }
+
+    .faq-container > h1 {
+      font-size: 30px;
+      margin-bottom: 40px;
+    }
+
+    .faq-item summary {
+      padding: 22px 20px;
+      font-size: 17px;
+    }
+
+    .faq-answer {
+      padding: 22px 20px 28px;
+      font-size: 15px;
+    }
+  }
+</style>

@@ -1,0 +1,797 @@
+
+---
+interface NavLink {
+  label: string
+  href?: string
+}
+
+interface NavGroup {
+  label: string
+  href?: string
+  links?: NavLink[]
+}
+
+interface NavItem {
+  label: string
+  href?: string
+  menuType?: 'link' | 'dropdown' | 'mega'
+  groups?: NavGroup[]
+}
+
+interface Props {
+  navigation?: {
+    logoText?: string
+    logoHref?: string
+    items?: NavItem[]
+    ctaText?: string
+    ctaLink?: string
+  } | null
+}
+
+const { navigation } = Astro.props
+
+const navItems = navigation?.items ?? []
+
+const logoText = navigation?.logoText ?? 'RightDirect'
+const logoHref = navigation?.logoHref ?? '/'
+const ctaText = navigation?.ctaText ?? 'Get Started'
+const ctaLink = navigation?.ctaLink ?? '/contact'
+---
+
+<header class="site-header">
+  <nav class="navbar" aria-label="Main navigation">
+    <a href={logoHref} class="brand" aria-label="RightDirect homepage">
+      <span>{logoText}</span>
+      <span class="brand-arrows">»»</span>
+    </a>
+
+    <button
+      class="mobile-toggle"
+      aria-label="Toggle navigation"
+      aria-expanded="false"
+      aria-controls="primary-navigation"
+    >
+      ☰
+    </button>
+
+    <div class="nav-content" id="primary-navigation">
+      <ul class="nav-list">
+        {navItems.map((item, index) => (
+          <li class="nav-item" data-nav-item>
+            {item.menuType === 'link' || !item.menuType ? (
+              <a
+                class="nav-link"
+                href={item.href ?? '#'}
+              >
+                {item.label}
+              </a>
+            ) : (
+              <>
+                <button
+                  class="nav-link nav-trigger"
+                  aria-expanded="false"
+                  aria-controls={`dropdown-${index}`}
+                  data-dropdown-trigger
+                >
+                  {item.label}
+                  <span class="chevron" aria-hidden="true"></span>
+                </button>
+
+                <div
+                  class:list={[
+                    'dropdown-panel',
+                    item.menuType === 'mega' && 'mega-menu',
+                  ]}
+                  id={`dropdown-${index}`}
+                  data-dropdown-panel
+                  hidden
+                >
+                  {item.menuType === 'mega' ? (
+                    <>
+<div class="mega-categories">
+  {item.groups?.map((group, groupIndex) => (
+    group.links && group.links.length > 0 ? (
+      <button
+        class="mega-category"
+        data-category-trigger
+        data-category-index={groupIndex}
+        aria-expanded="false"
+      >
+        {group.label}
+        <span>›</span>
+      </button>
+    ) : (
+      <a
+        class="mega-category mega-category-link"
+        href={group.href ?? '#'}
+      >
+        {group.label}
+      </a>
+    )
+  ))}
+</div>
+
+                      <div class="mega-links">
+                        {item.groups?.map((group, groupIndex) => (
+                          <div
+                            class="mega-links-group"
+                            data-category-panel
+                            data-category-index={groupIndex}
+                            hidden
+                          >
+                            {group.links?.map((link) => (
+                              <a href={link.href ?? '#'}>
+                                {link.label}
+                              </a>
+                            ))}
+                          </div>
+                        ))}
+                      </div>
+                    </>
+                  ) : (
+                    <div class="dropdown-links">
+                      {item.groups?.map((group) => (
+                        <>
+                          {group.href && (
+                            <a class="dropdown-category" href={group.href}>
+                              {group.label}
+                            </a>
+                          )}
+
+                          {!group.href && (
+                            <span class="dropdown-category">
+                              {group.label}
+                            </span>
+                          )}
+
+                          {group.links?.map((link) => (
+                            <a href={link.href ?? '#'}>
+                              {link.label}
+                            </a>
+                          ))}
+                        </>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
+          </li>
+        ))}
+      </ul>
+
+      <a href={ctaLink} class="nav-cta">
+        {ctaText}
+        <span>→</span>
+      </a>
+    </div>
+  </nav>
+</header>
+
+
+<script>
+  const nav = document.querySelector('.navbar')
+
+  if (nav) {
+    const mobileToggle = nav.querySelector('.mobile-toggle')
+    const navContent = nav.querySelector('.nav-content')
+    const dropdownTriggers = nav.querySelectorAll('[data-dropdown-trigger]')
+
+    const isMobile = () => window.matchMedia('(max-width: 1100px)').matches
+
+    let dropdownCloseTimer
+
+const cancelDropdownClose = () => {
+  clearTimeout(dropdownCloseTimer)
+}
+
+const scheduleDropdownClose = () => {
+  cancelDropdownClose()
+
+  dropdownCloseTimer = setTimeout(() => {
+    closeDropdowns()
+  }, 200)
+}
+
+    const closeDropdowns = () => {
+      nav.querySelectorAll('[data-dropdown-panel]').forEach((panel) => {
+        panel.hidden = true
+      })
+
+      dropdownTriggers.forEach((trigger) => {
+        trigger.setAttribute('aria-expanded', 'false')
+      })
+    }
+
+    const openDropdown = (trigger) => {
+      closeDropdowns()
+
+      const panelId = trigger.getAttribute('aria-controls')
+      const panel = panelId ? document.getElementById(panelId) : null
+
+      if (panel) {
+        panel.hidden = false
+        trigger.setAttribute('aria-expanded', 'true')
+      }
+    }
+
+    // Mobile hamburger
+    mobileToggle?.addEventListener('click', () => {
+      const isOpen = mobileToggle.getAttribute('aria-expanded') === 'true'
+
+      mobileToggle.setAttribute('aria-expanded', String(!isOpen))
+      navContent?.classList.toggle('mobile-open', !isOpen)
+
+      if (isOpen) {
+        closeDropdowns()
+      }
+    })
+
+    dropdownTriggers.forEach((trigger) => {
+      // Click toggles dropdown on desktop and mobile
+      trigger.addEventListener('click', (event) => {
+  event.stopPropagation()
+
+  const isOpen = trigger.getAttribute('aria-expanded') === 'true'
+
+  // Mobile: toggle the selected dropdown
+  if (window.innerWidth <= 768) {
+    if (isOpen) {
+      closeDropdowns()
+    } else {
+      closeDropdowns()
+      openDropdown(trigger)
+    }
+    return
+  }
+
+  // Desktop: normal dropdown toggle
+  if (isOpen) {
+    closeDropdowns()
+  } else {
+    openDropdown(trigger)
+  }
+})
+
+      // Desktop hover opens dropdown
+      const navItem = trigger.closest('[data-nav-item]')
+
+
+navItem?.addEventListener('mouseenter', () => {
+  if (!isMobile()) {
+    cancelDropdownClose()
+    openDropdown(trigger)
+  }
+})
+
+navItem?.addEventListener('mouseleave', () => {
+  if (!isMobile()) {
+    scheduleDropdownClose()
+  }
+})
+
+const panelId = trigger.getAttribute('aria-controls')
+const panel = panelId ? document.getElementById(panelId) : null
+
+panel?.addEventListener('mouseenter', () => {
+  if (!isMobile()) {
+    cancelDropdownClose()
+  }
+})
+
+panel?.addEventListener('mouseleave', () => {
+  if (!isMobile()) {
+    scheduleDropdownClose()
+  }
+})
+
+    })
+
+// Mega menu category switching
+nav.querySelectorAll('[data-category-trigger]').forEach((trigger) => {
+  const activateCategory = () => {
+    const categoryIndex = trigger.getAttribute('data-category-index')
+    const megaMenu = trigger.closest('[data-dropdown-panel]')
+
+    if (!megaMenu) return
+
+    // Highlight only the category currently being hovered/clicked.
+    megaMenu.querySelectorAll('[data-category-trigger]').forEach((category) => {
+      const isActive = category === trigger
+      category.classList.toggle('active', isActive)
+      category.setAttribute('aria-expanded', String(isActive))
+    })
+
+    // Hide every submenu, then show only the selected category's submenu.
+    megaMenu.querySelectorAll('[data-category-panel]').forEach((submenu) => {
+      submenu.hidden = true
+    })
+
+    const selectedSubmenu = megaMenu.querySelector(
+      `[data-category-panel][data-category-index="${categoryIndex}"]`
+    )
+
+    if (selectedSubmenu) {
+      selectedSubmenu.hidden = false
+    }
+  }
+
+  // Desktop: change submenu when hovering a category.
+  trigger.addEventListener('mouseenter', activateCategory)
+
+  // Keyboard and touch/click support.
+  trigger.addEventListener('focus', activateCategory)
+  trigger.addEventListener('click', activateCategory)
+})
+
+// Close the right-side submenu when hovering over a direct category link
+nav.querySelectorAll('.mega-category-link').forEach((link) => {
+  link.addEventListener('mouseenter', () => {
+    const panel = link.closest('[data-dropdown-panel]')
+
+    if (!panel) return
+
+    // Remove active styling from submenu categories
+    panel.querySelectorAll('[data-category-trigger]').forEach((button) => {
+      button.classList.remove('active')
+      button.setAttribute('aria-expanded', 'false')
+    })
+
+    // Hide all right-side submenu contents
+    panel.querySelectorAll('[data-category-panel]').forEach((group) => {
+      group.hidden = true
+    })
+  })
+})
+
+// Close after selecting any dropdown link
+    nav.querySelectorAll('[data-dropdown-panel] a').forEach((link) => {
+      link.addEventListener('click', () => {
+        closeDropdowns()
+        navContent?.classList.remove('mobile-open')
+        mobileToggle?.setAttribute('aria-expanded', 'false')
+      })
+    })
+
+    // Close on outside click
+    document.addEventListener('click', (event) => {
+      if (!nav.contains(event.target)) {
+        closeDropdowns()
+      }
+    })
+
+    // Close on Escape
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        closeDropdowns()
+        mobileToggle?.setAttribute('aria-expanded', 'false')
+        navContent?.classList.remove('mobile-open')
+      }
+    })
+
+    // Close dropdowns when switching between desktop and mobile
+    window.addEventListener('resize', closeDropdowns)
+  }
+</script>
+
+
+<style>
+  .site-header {
+    position: relative;
+    z-index: 100;
+    padding: 16px 24px;
+  }
+
+.navbar {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+
+  width: calc(100% - 40px);
+  max-width: 1400px;
+
+  margin: 0;
+  padding: 14px 24px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
+
+  z-index: 1000;
+}
+
+  .brand {
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    text-decoration: none;
+    font-size: 30px;
+    font-weight: 500;
+    color: #194a92;
+  }
+
+  .brand-arrows {
+    margin-left: 3px;
+    color: #194a92;
+    font-weight: 700;
+  }
+
+  .nav-content {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .nav-list {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .nav-item {
+    position: relative;
+  }
+
+  .nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    padding: 12px 16px;
+    color: #344054;
+    font: inherit;
+    font-size: 15px;
+    text-decoration: none;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .nav-link:hover,
+  .nav-link[aria-expanded='true'] {
+    background: #edf4fc;
+    color: #194a92;
+  }
+
+.chevron {
+  width: 7px;
+  height: 7px;
+  flex-shrink: 0;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(45deg) translateY(-2px);
+  transition: transform 0.25s ease;
+}
+
+.nav-trigger[aria-expanded='true'] .chevron {
+  transform: rotate(225deg) translateY(-2px);
+}
+
+  .nav-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 18px;
+    border-radius: 999px;
+    background: #16478e;
+    color: white;
+    text-decoration: none;
+    padding: 15px 25px;
+    font-weight: 600;
+    white-space: nowrap;
+    box-shadow: 0 4px 12px rgba(22, 71, 142, 0.15);
+  }
+
+  .nav-cta:hover {
+    background: #103b78;
+  }
+
+  .dropdown-panel {
+    position: absolute;
+    top: calc(100% + 12px);
+    left: 0;
+    min-width: 280px;
+    padding: 12px;
+    border-radius: 12px;
+    background: white;
+    box-shadow: 0 12px 35px rgba(15, 23, 42, 0.14);
+    border: 1px solid #edf0f5;
+  }
+  /* Invisible bridge between navbar and dropdown */
+.dropdown-panel::before {
+  content: "";
+  position: absolute;
+  top: -12px;
+  left: 0;
+  right: 0;
+  height: 12px;
+}
+
+.mega-menu {
+  display: grid;
+  grid-template-columns: 260px;
+  gap: 8px;
+  min-width: 0;
+  width: max-content;
+}
+
+/* Add the submenu column only after a category is selected */
+.mega-menu:has(.mega-links-group:not([hidden])) {
+  grid-template-columns: 260px 280px;
+  min-width: 550px;
+}
+.mega-links {
+  min-width: 0;
+}
+
+.mega-links-group[hidden] {
+  display: none !important;
+}
+
+  .mega-menu[hidden],
+  .dropdown-panel[hidden] {
+    display: none;
+  }
+
+  .mega-category {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: #344054;
+    text-align: left;
+    cursor: pointer;
+    font: inherit;
+  }
+
+  .mega-category:hover,
+  .mega-category.active {
+    background: #edf4fc;
+    color: #16478e;
+  }
+
+  .mega-links-group,
+  .dropdown-links {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .mega-links-group[hidden] {
+    display: none;
+  }
+
+  .mega-links a,
+  .dropdown-links a {
+    display: block;
+    padding: 10px 12px;
+    border-radius: 8px;
+    color: #344054;
+    text-decoration: none;
+    font-size: 14px;
+  }
+
+  .mega-links a:hover,
+  .dropdown-links a:hover {
+    background: #f3f6fa;
+    color: #16478e;
+  }
+
+  .dropdown-category {
+    font-weight: 600;
+    color: #16478e !important;
+  }
+
+  .mobile-toggle {
+    display: none;
+    border: 0;
+    background: transparent;
+    font-size: 25px;
+    cursor: pointer;
+  }
+
+  /* Mobile navigation improvements */
+
+/* Mobile and tablet navigation */
+@media (max-width: 1100px) {
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    padding: 8px 12px;
+  }
+
+  .navbar {
+    position: relative;
+    width: 100%;
+    box-sizing: border-box;
+    border-radius: 20px;
+    padding: 12px 16px;
+    gap: 12px;
+  }
+
+  .brand {
+    font-size: 24px;
+    flex-shrink: 0;
+  }
+
+  /* Hamburger button */
+  .mobile-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    margin-left: auto;
+    border: 0;
+    border-radius: 10px;
+    background: transparent;
+    font-size: 25px;
+    cursor: pointer;
+  }
+
+  .mobile-toggle:hover {
+    background: #edf4fc;
+  }
+
+  /* Hide navigation completely until hamburger is clicked */
+  .nav-content {
+    display: none;
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 0;
+    right: 0;
+    width: 100%;
+    max-height: calc(100dvh - 120px);
+    box-sizing: border-box;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding: 14px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+    background: #fff;
+    border: 1px solid #edf0f5;
+    border-radius: 18px;
+    box-shadow: 0 12px 35px rgba(15, 23, 42, 0.14);
+    scrollbar-width: thin;
+  }
+
+  /* Show menu only when hamburger is clicked */
+  .nav-content.mobile-open {
+    display: flex;
+  }
+
+  .nav-list {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    gap: 4px;
+  }
+
+  .nav-item {
+    width: 100%;
+  }
+
+  .nav-link {
+    display: flex;
+    width: 100%;
+    min-height: 48px;
+    box-sizing: border-box;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    border-radius: 12px;
+    white-space: normal;
+    text-align: left;
+  }
+
+  /* Dropdown panels stay inside the mobile menu */
+  .dropdown-panel {
+    position: static;
+    width: 100%;
+    min-width: 0;
+    max-height: none;
+    box-sizing: border-box;
+    margin: 6px 0 10px;
+    padding: 10px;
+    overflow: visible;
+    border-radius: 14px;
+    border: 1px solid #edf0f5;
+    background: #fff;
+    box-shadow: none;
+  }
+
+  /* Mobile mega menu becomes a single-column layout.
+     This selector also overrides the desktop :has() rule above,
+     which otherwise forces the menu to remain 550px wide. */
+  .mega-menu,
+  .mega-menu:has(.mega-links-group:not([hidden])) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .mega-categories,
+  .mega-links,
+  .mega-links-group {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  .mega-links-group:not([hidden]) {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .mega-categories {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .mega-category {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    min-height: 44px;
+    box-sizing: border-box;
+    padding: 12px;
+    border-radius: 10px;
+    text-align: left;
+  }
+
+  .mega-category-link {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+  }
+
+  .mega-links {
+    min-width: 0;
+  }
+
+  .mega-links a,
+  .dropdown-links a {
+    display: block;
+    min-height: 44px;
+    box-sizing: border-box;
+    padding: 12px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+  }
+
+  /* CTA fits inside the mobile menu */
+  .nav-cta {
+    display: flex;
+    width: 100%;
+    min-height: 48px;
+    box-sizing: border-box;
+    justify-content: center;
+    margin-top: 8px;
+  }
+}
+
+</style>
