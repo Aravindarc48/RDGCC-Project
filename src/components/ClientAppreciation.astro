@@ -37,6 +37,12 @@ const {
 const sortedTestimonials = [...testimonials].sort(
   (a, b) => (a.order ?? 0) - (b.order ?? 0)
 )
+
+const formatQuote = (text?: string) => {
+  if (!text) return ''
+  const trimmed = text.trim().replace(/^["“'”]+|["“'”]+$/g, '').trim()
+  return `“${trimmed}”`
+}
 ---
 
 {sortedTestimonials.length > 0 && (
@@ -86,7 +92,7 @@ const sortedTestimonials = [...testimonials].sort(
               </p>
 
               <blockquote class="testimonial-text">
-                “{item.testimonial}”
+                {formatQuote(item.testimonial)}
               </blockquote>
 
               <div class="testimonial-person">
@@ -320,44 +326,62 @@ const sortedTestimonials = [...testimonials].sort(
 
     .testimonial-heading {
       font-size: 30px;
-      margin-bottom: 50px;
+      margin-bottom: 40px;
+      text-align: center;
     }
 
     .testimonial-slide {
       grid-template-columns: 1fr;
-      gap: 25px;
-      align-items: start;
+      justify-items: center;
+      text-align: center;
+      gap: 22px;
     }
 
     .testimonial-profile {
-      width: 100px;
-      height: 100px;
+      width: 105px;
+      height: 105px;
+      margin: 0 auto;
+    }
+
+    .testimonial-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      width: 100%;
+      max-width: 580px;
+      margin: 0 auto;
     }
 
     .testimonial-company {
-      margin-bottom: 20px;
+      margin-bottom: 16px;
       font-size: 13px;
+      text-align: center;
     }
 
     .testimonial-text {
-      font-size: 17px;
-      line-height: 1.7;
+      font-size: 16px;
+      line-height: 1.75;
+      text-align: center;
     }
 
     .testimonial-person {
-      margin-top: 25px;
+      margin-top: 24px;
+      text-align: center;
     }
 
     .testimonial-person h3 {
-      font-size: 21px;
+      font-size: 20px;
+      text-align: center;
     }
 
     .testimonial-person p {
-      font-size: 15px;
+      font-size: 14px;
+      text-align: center;
     }
 
     .testimonial-controls {
-      margin-top: 40px;
+      margin-top: 35px;
     }
   }
 

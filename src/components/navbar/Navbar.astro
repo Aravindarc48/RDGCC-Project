@@ -92,57 +92,55 @@ const brandAriaLabel = logoText ? `${logoText} homepage` : 'Homepage'
                   hidden
                 >
                   {item.menuType === 'mega' ? (
-                    <>
-<div class="mega-categories">
-  {item.groups?.map((group, groupIndex) => (
-    group.links && group.links.length > 0 ? (
-      <button
-        class="mega-category"
-        data-category-trigger
-        data-category-index={groupIndex}
-        aria-expanded="false"
-      >
-        {group.label}
-        <span>›</span>
-      </button>
-    ) : (
-      group.href ? (
-        <a
-          class="mega-category mega-category-link"
-          href={group.href}
-        >
-          {group.label}
-        </a>
-      ) : (
-        <span class="mega-category mega-category-link">
-          {group.label}
-        </span>
-      )
-    )
-  ))}
-</div>
+                    <div class="mega-menu-content">
+                      {item.groups?.map((group, groupIndex) => (
+                        <div class="mega-group" data-category-group={groupIndex}>
+                          {group.links && group.links.length > 0 ? (
+                            <button
+                              class="mega-category"
+                              data-category-trigger
+                              data-category-index={groupIndex}
+                              aria-expanded="false"
+                            >
+                              <span>{group.label}</span>
+                              <span class="category-indicator" aria-hidden="true">›</span>
+                            </button>
+                          ) : (
+                            group.href ? (
+                              <a
+                                class="mega-category mega-category-link"
+                                href={group.href}
+                              >
+                                <span>{group.label}</span>
+                              </a>
+                            ) : (
+                              <span class="mega-category mega-category-link">
+                                <span>{group.label}</span>
+                              </span>
+                            )
+                          )}
 
-                      <div class="mega-links">
-                        {item.groups?.map((group, groupIndex) => (
-                          <div
-                            class="mega-links-group"
-                            data-category-panel
-                            data-category-index={groupIndex}
-                            hidden
-                          >
-                            {group.links?.map((link) => (
-                              link.href ? (
-                                <a href={link.href}>
-                                  {link.label}
-                                </a>
-                              ) : (
-                                <span>{link.label}</span>
-                              )
-                            ))}
-                          </div>
-                        ))}
-                      </div>
-                    </>
+                          {group.links && group.links.length > 0 && (
+                            <div
+                              class="mega-links-group"
+                              data-category-panel
+                              data-category-index={groupIndex}
+                              hidden
+                            >
+                              {group.links.map((link) => (
+                                link.href ? (
+                                  <a href={link.href} class="mega-link-item">
+                                    {link.label}
+                                  </a>
+                                ) : (
+                                  <span class="mega-link-item">{link.label}</span>
+                                )
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
                   ) : (
                     <div class="dropdown-links">
                       {item.groups?.map((group) => (
@@ -308,58 +306,116 @@ panel?.addEventListener('mouseleave', () => {
 
 // Mega menu category switching
 nav.querySelectorAll('[data-category-trigger]').forEach((trigger) => {
-  const activateCategory = () => {
-    const categoryIndex = trigger.getAttribute('data-category-index')
-    const megaMenu = trigger.closest('[data-dropdown-panel]')
+  const categoryIndex = trigger.getAttribute('data-category-index')
+  const megaMenu = trigger.closest('[data-dropdown-panel]')
 
-    if (!megaMenu) return
+  if (!megaMenu) return
 
-    // Highlight only the category currently being hovered/clicked.
-    megaMenu.querySelectorAll('[data-category-trigger]').forEach((category) => {
-      const isActive = category === trigger
-      category.classList.toggle('active', isActive)
-      category.setAttribute('aria-expanded', String(isActive))
-    })
+  const toggleCategory = (e: Event) => {
+    const isMobileNav = window.innerWidth <= 1100
+    const isCurrentlyExpanded = trigger.getAttribute('aria-expanded') === 'true'
 
-    // Hide every submenu, then show only the selected category's submenu.
-    megaMenu.querySelectorAll('[data-category-panel]').forEach((submenu) => {
-      submenu.hidden = true
-    })
+    if (isMobileNav) {
+      e.preventDefault()
+      e.stopPropagation()
+      const submenu = megaMenu.querySelector<HTMLElement>(
+        `[data-category-panel][data-category-index="${categoryIndex}"]`
+      )
+      if (isCurrentlyExpanded) {
+        trigger.setAttribute('aria-expanded', 'false')
+        trigger.classList.remove('active')
+        if (submenu) submenu.hidden = true
+      } else {
+        trigger.setAttribute('aria-expanded', 'true')
+        trigger.classList.add('active')
+        if (submenu) submenu.hidden = false
+      }
+    } else {
+      megaMenu.querySelectorAll('[data-category-trigger]').forEach((category) => {
+        const isActive = category === trigger
+        category.classList.toggle('active', isActive)
+        category.setAttribute('aria-expanded', String(isActive))
+      })
 
-    const selectedSubmenu = megaMenu.querySelector(
-      `[data-category-panel][data-category-index="${categoryIndex}"]`
-    )
+      megaMenu.querySelectorAll<HTMLElement>('[data-category-panel]').forEach((submenu) => {
+        submenu.hidden = true
+      })
 
-    if (selectedSubmenu) {
-      selectedSubmenu.hidden = false
+      const selectedSubmenu = megaMenu.querySelector<HTMLElement>(
+        `[data-category-panel][data-category-index="${categoryIndex}"]`
+      )
+
+      if (selectedSubmenu) {
+        selectedSubmenu.hidden = false
+      }
     }
   }
 
-  // Desktop: change submenu when hovering a category.
-  trigger.addEventListener('mouseenter', activateCategory)
+  // Desktop: change submenu when hovering or focusing a category
+  trigger.addEventListener('mouseenter', () => {
+    if (window.innerWidth > 1100) {
+      megaMenu.querySelectorAll('[data-category-trigger]').forEach((category) => {
+        const isActive = category === trigger
+        category.classList.toggle('active', isActive)
+        category.setAttribute('aria-expanded', String(isActive))
+      })
 
-  // Keyboard and touch/click support.
-  trigger.addEventListener('focus', activateCategory)
-  trigger.addEventListener('click', activateCategory)
+      megaMenu.querySelectorAll<HTMLElement>('[data-category-panel]').forEach((submenu) => {
+        submenu.hidden = true
+      })
+
+      const selectedSubmenu = megaMenu.querySelector<HTMLElement>(
+        `[data-category-panel][data-category-index="${categoryIndex}"]`
+      )
+
+      if (selectedSubmenu) {
+        selectedSubmenu.hidden = false
+      }
+    }
+  })
+
+  trigger.addEventListener('focus', () => {
+    if (window.innerWidth > 1100) {
+      megaMenu.querySelectorAll('[data-category-trigger]').forEach((category) => {
+        const isActive = category === trigger
+        category.classList.toggle('active', isActive)
+        category.setAttribute('aria-expanded', String(isActive))
+      })
+
+      megaMenu.querySelectorAll<HTMLElement>('[data-category-panel]').forEach((submenu) => {
+        submenu.hidden = true
+      })
+
+      const selectedSubmenu = megaMenu.querySelector<HTMLElement>(
+        `[data-category-panel][data-category-index="${categoryIndex}"]`
+      )
+
+      if (selectedSubmenu) {
+        selectedSubmenu.hidden = false
+      }
+    }
+  })
+
+  trigger.addEventListener('click', toggleCategory)
 })
 
 // Close the right-side submenu when hovering over a direct category link
 nav.querySelectorAll('.mega-category-link').forEach((link) => {
   link.addEventListener('mouseenter', () => {
-    const panel = link.closest('[data-dropdown-panel]')
+    if (window.innerWidth > 1100) {
+      const panel = link.closest('[data-dropdown-panel]')
 
-    if (!panel) return
+      if (!panel) return
 
-    // Remove active styling from submenu categories
-    panel.querySelectorAll('[data-category-trigger]').forEach((button) => {
-      button.classList.remove('active')
-      button.setAttribute('aria-expanded', 'false')
-    })
+      panel.querySelectorAll('[data-category-trigger]').forEach((button) => {
+        button.classList.remove('active')
+        button.setAttribute('aria-expanded', 'false')
+      })
 
-    // Hide all right-side submenu contents
-    panel.querySelectorAll('[data-category-panel]').forEach((group) => {
-      group.hidden = true
-    })
+      panel.querySelectorAll<HTMLElement>('[data-category-panel]').forEach((group) => {
+        group.hidden = true
+      })
+    }
   })
 })
 
@@ -536,20 +592,25 @@ nav.querySelectorAll('.mega-category-link').forEach((link) => {
 }
 
 .mega-menu {
-  display: grid;
-  grid-template-columns: 260px;
-  gap: 8px;
   min-width: 0;
   width: max-content;
 }
 
+.mega-menu-content {
+  display: grid;
+  grid-template-columns: 260px;
+  gap: 8px;
+  min-width: 260px;
+}
+
 /* Add the submenu column only after a category is selected */
-.mega-menu:has(.mega-links-group:not([hidden])) {
+.mega-menu:has(.mega-links-group:not([hidden])) .mega-menu-content {
   grid-template-columns: 260px 280px;
   min-width: 550px;
 }
-.mega-links {
-  min-width: 0;
+
+.mega-group {
+  display: contents;
 }
 
 .mega-links-group[hidden] {
@@ -562,9 +623,11 @@ nav.querySelectorAll('.mega-category-link').forEach((link) => {
   }
 
   .mega-category {
+    grid-column: 1;
     width: 100%;
     display: flex;
     justify-content: space-between;
+    align-items: center;
     gap: 12px;
     padding: 12px;
     border: 0;
@@ -576,13 +639,32 @@ nav.querySelectorAll('.mega-category-link').forEach((link) => {
     font: inherit;
   }
 
+  .category-indicator {
+    font-size: 16px;
+    line-height: 1;
+    color: #64748b;
+    transition: transform 0.2s ease;
+  }
+
   .mega-category:hover,
   .mega-category.active {
     background: #edf4fc;
     color: #16478e;
   }
 
-  .mega-links-group,
+  .mega-category:hover .category-indicator,
+  .mega-category.active .category-indicator {
+    color: #16478e;
+  }
+
+  .mega-links-group {
+    grid-column: 2;
+    grid-row: 1 / span 20;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
   .dropdown-links {
     display: flex;
     flex-direction: column;
@@ -737,49 +819,57 @@ nav.querySelectorAll('.mega-category-link').forEach((link) => {
     box-shadow: none;
   }
 
-  /* Mobile mega menu becomes a single-column layout.
-     This selector also overrides the desktop :has() rule above,
-     which otherwise forces the menu to remain 550px wide. */
+  /* Mobile mega menu becomes a vertical accordion layout */
   .mega-menu,
   .mega-menu:has(.mega-links-group:not([hidden])) {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: 8px;
+    display: block;
     width: 100%;
     min-width: 0;
     max-width: 100%;
   }
 
-  .mega-categories,
-  .mega-links,
-  .mega-links-group {
+  .mega-menu-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
     width: 100%;
     min-width: 0;
-    box-sizing: border-box;
   }
 
-  .mega-links-group:not([hidden]) {
+  .mega-group {
     display: flex;
     flex-direction: column;
-    gap: 4px;
-  }
-
-  .mega-categories {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
+    width: 100%;
   }
 
   .mega-category {
+    grid-column: auto;
+    width: 100%;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    width: 100%;
     min-height: 44px;
     box-sizing: border-box;
-    padding: 12px;
+    padding: 12px 14px;
     border-radius: 10px;
     text-align: left;
+    font-size: 15px;
+    font-weight: 500;
+  }
+
+  .mega-category.active {
+    background: #edf4fc;
+    color: #16478e;
+  }
+
+  .category-indicator {
+    font-size: 18px;
+    line-height: 1;
+    transition: transform 0.25s ease;
+  }
+
+  .mega-category[aria-expanded="true"] .category-indicator {
+    transform: rotate(90deg);
   }
 
   .mega-category-link {
@@ -788,16 +878,29 @@ nav.querySelectorAll('.mega-category-link').forEach((link) => {
     text-decoration: none;
   }
 
-  .mega-links {
-    min-width: 0;
+  .mega-links-group {
+    grid-column: auto;
+    grid-row: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    width: calc(100% - 16px);
+    margin: 4px 0 8px 16px;
+    padding: 6px 0 6px 14px;
+    border-left: 2px solid #cbd7e4;
+    box-sizing: border-box;
   }
 
-  .mega-links a,
+  .mega-links-group[hidden] {
+    display: none !important;
+  }
+
+  .mega-links-group a,
   .dropdown-links a {
     display: block;
     min-height: 44px;
     box-sizing: border-box;
-    padding: 12px;
+    padding: 10px 12px;
     line-height: 1.5;
     overflow-wrap: anywhere;
   }
