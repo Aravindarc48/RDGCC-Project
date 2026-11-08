@@ -121,5 +121,23 @@ defineField({
       title: 'SEO Description',
       type: 'text',
     }),
+
+    defineField({
+      name: 'ogImage',
+      title: 'Open Graph / Social Share Image',
+      description: 'Image displayed when sharing the page on social media (recommended 1200x630)',
+      type: 'image',
+      options: {
+        hotspot: true,
+      },
+      fields: [
+        defineField({
+          name: 'alt',
+          title: 'Alternative Text',
+          description: 'Descriptive text for accessibility and social media preview',
+          type: 'string',
+        }),
+      ],
+    }),
   ],
 })

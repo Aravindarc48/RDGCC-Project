@@ -37,6 +37,16 @@ interface Homepage {
   }[]
   seoTitle?: string
   seoDescription?: string
+  ogImage?: {
+    asset?: {
+      _ref?: string
+      _type?: string
+    }
+    alt?: string
+    crop?: SanityImageCrop
+    hotspot?: SanityImageHotspot
+  }
+  ogImageUrl?: string
 }
 
 interface ServiceCard {
@@ -310,7 +320,13 @@ const pageQuery = `{
       label
     },
     seoTitle,
-    seoDescription
+    seoDescription,
+    ogImage{
+      asset,
+      alt,
+      crop,
+      hotspot
+    }
   },
   "services": *[_type == "servicesSection"][0]{
     sectionTitle,
@@ -487,6 +503,15 @@ try {
       .width(1200)
       .url()
   }
+
+  if (pageData?.homepage?.ogImage?.asset) {
+    pageData.homepage.ogImageUrl = urlFor(pageData.homepage.ogImage)
+      .width(1200)
+      .height(630)
+      .fit('crop')
+      .auto('format')
+      .url()
+  }
 } catch (err) {
   console.error('Failed to fetch content from Sanity:', err)
   error = true
@@ -507,6 +532,7 @@ const footer = pageData?.footer ?? null
 <Layout
   title={homepage?.seoTitle}
   description={homepage?.seoDescription}
+  ogImageUrl={homepage?.ogImageUrl}
 >
   <div class="min-h-screen bg-white">
     {error ? (
