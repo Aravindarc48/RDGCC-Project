@@ -132,14 +132,14 @@ const socialIcons: Record<string, string> = {
 
         {email && (
           <div class="contact-item">
-            <span class="contact-icon">✉</span>
+            <span class="contact-icon" aria-hidden="true">✉</span>
             <a href={`mailto:${email}`}>{email}</a>
           </div>
         )}
 
         {phone && (
           <div class="contact-item">
-            <span class="contact-icon">♧</span>
+            <span class="contact-icon" aria-hidden="true">♧</span>
             <a href={`tel:${phone.replace(/\s+/g, '')}`}>
               {phone}
             </a>
@@ -148,7 +148,7 @@ const socialIcons: Record<string, string> = {
 
         {address && (
           <div class="contact-item">
-            <span class="contact-icon">⌖</span>
+            <span class="contact-icon" aria-hidden="true">⌖</span>
             <p>{address}</p>
           </div>
         )}

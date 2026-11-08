@@ -24,19 +24,19 @@ const { heading, description, steps = [] } = Astro.props
 
   <div class="steps-grid">
     {steps.map((step, index) => (
-      <article class="step-card" tabindex="0">
+      <article class="step-card">
         <div class="step-number">{step.stepNumber}</div>
 
         <div class="step-icon">
           {step.icon === 'search' && (
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
               <circle cx="10.5" cy="10.5" r="7.5" />
               <path d="m16 16 5 5" />
             </svg>
           )}
 
           {step.icon === 'palette' && (
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
               <path d="M12 3a9 9 0 1 0 0 18h1.5a2 2 0 0 0 1.4-3.4 1.8 1.8 0 0 1 1.3-3.1H19a2 2 0 0 0 2-2A9 9 0 0 0 12 3Z" />
               <circle cx="7.5" cy="10" r="1" />
               <circle cx="10" cy="6.5" r="1" />
@@ -45,7 +45,7 @@ const { heading, description, steps = [] } = Astro.props
           )}
 
           {step.icon === 'rocket' && (
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
               <path d="M4.5 16.5c-1.5 1.5-1.5 4-1.5 4s2.5 0 4-1.5" />
               <path d="M12 15l-3-3 4-7c2-2 5-2 7-2 0 2 0 5-2 7l-6 5Z" />
               <path d="m9 12-4 1-2 4 5-1" />
@@ -55,7 +55,7 @@ const { heading, description, steps = [] } = Astro.props
           )}
 
           {step.icon === 'settings' && (
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
               <path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z" />
               <path d="m19.4 15 .1.1 1.1 1.9-1.7 2.9-2.2-.5a8 8 0 0 1-1.8 1l-.8 2.1h-3.4l-.8-2.1a8 8 0 0 1-1.8-1l-2.2.5-1.7-2.9 1.1-1.9a8 8 0 0 1 0-2l-1.1-1.9 1.7-2.9 2.2.5a8 8 0 0 1 1.8-1l.8-2.1h3.4l.8 2.1a8 8 0 0 1 1.8 1l2.2-.5 1.7 2.9-1.1 1.9a8 8 0 0 1 0 2Z" />
             </svg>

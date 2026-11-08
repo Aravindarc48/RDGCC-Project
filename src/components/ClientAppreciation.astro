@@ -94,16 +94,36 @@ const sortedTestimonials = [...testimonials].sort(
       </div>
 
       {sortedTestimonials.length > 1 && (
-        <div class="testimonial-dots" aria-label="Choose a testimonial">
-          {sortedTestimonials.map((item, index) => (
+        <div class="testimonial-controls">
+          <div class="testimonial-dots" aria-label="Choose a testimonial">
+            {sortedTestimonials.map((item, index) => (
+              <button
+                type="button"
+                class={`testimonial-dot ${index === 0 ? 'active' : ''}`}
+                aria-label={`Show testimonial ${index + 1}`}
+                aria-current={index === 0 ? 'true' : 'false'}
+                data-index={index}
+              />
+            ))}
+          </div>
+
+          {autoplayEnabled && (
             <button
               type="button"
-              class={`testimonial-dot ${index === 0 ? 'active' : ''}`}
-              aria-label={`Show testimonial ${index + 1}`}
-              aria-current={index === 0 ? 'true' : 'false'}
-              data-index={index}
-            />
-          ))}
+              class="testimonial-toggle"
+              aria-label="Pause testimonial autoplay"
+              aria-pressed="false"
+              data-autoplay-toggle
+            >
+              <svg class="icon-pause" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true">
+                <rect x="6" y="4" width="4" height="16" rx="1" />
+                <rect x="14" y="4" width="4" height="16" rx="1" />
+              </svg>
+              <svg class="icon-play" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" style="display: none;">
+                <polygon points="5 3 19 12 5 21 5 3" />
+              </svg>
+            </button>
+          )}
         </div>
       )}
 
@@ -214,13 +234,39 @@ const sortedTestimonials = [...testimonials].sort(
     line-height: 1.5;
   }
 
-  /* Navigation dots */
+  /* Navigation controls */
+  .testimonial-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    margin-top: 60px;
+  }
+
   .testimonial-dots {
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 13px;
-    margin-top: 60px;
+  }
+
+  .testimonial-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 1px solid #cbd7e4;
+    background: #ffffff;
+    color: #07518d;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  }
+
+  .testimonial-toggle:hover {
+    background: #edf4fc;
+    border-color: #07518d;
   }
 
   .testimonial-dot {
@@ -301,7 +347,7 @@ const sortedTestimonials = [...testimonials].sort(
       font-size: 15px;
     }
 
-    .testimonial-dots {
+    .testimonial-controls {
       margin-top: 40px;
     }
   }
@@ -314,7 +360,7 @@ const sortedTestimonials = [...testimonials].sort(
 </style>
 
 <script>
-  document.querySelectorAll('.client-appreciation').forEach((section) => {
+  document.querySelectorAll<HTMLElement>('.client-appreciation').forEach((section) => {
     const slides = Array.from(
       section.querySelectorAll('.testimonial-slide')
     )
@@ -322,6 +368,10 @@ const sortedTestimonials = [...testimonials].sort(
     const dots = Array.from(
       section.querySelectorAll('.testimonial-dot')
     )
+
+    const toggleButton = section.querySelector<HTMLButtonElement>('[data-autoplay-toggle]')
+    const pauseIcon = toggleButton?.querySelector<SVGElement>('.icon-pause')
+    const playIcon = toggleButton?.querySelector<SVGElement>('.icon-play')
 
     if (slides.length <= 1) return
 
@@ -331,8 +381,24 @@ const sortedTestimonials = [...testimonials].sort(
     const interval =
       Number(section.dataset.interval) || 5
 
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    let userPaused = prefersReducedMotion
+    let isHoveredOrFocused = false
     let currentIndex = 0
     let timer: ReturnType<typeof setInterval> | undefined
+
+    function updateToggleButton() {
+      if (!toggleButton) return
+      toggleButton.setAttribute('aria-pressed', String(userPaused))
+      toggleButton.setAttribute(
+        'aria-label',
+        userPaused ? 'Play testimonial autoplay' : 'Pause testimonial autoplay'
+      )
+      if (pauseIcon && playIcon) {
+        pauseIcon.style.display = userPaused ? 'none' : 'block'
+        playIcon.style.display = userPaused ? 'block' : 'none'
+      }
+    }
 
     function showSlide(index: number) {
       currentIndex = index
@@ -366,12 +432,45 @@ const sortedTestimonials = [...testimonials].sort(
     function startAutoplay() {
       stopAutoplay()
 
-      if (!autoplayEnabled) return
+      if (!autoplayEnabled || userPaused || isHoveredOrFocused || prefersReducedMotion) return
 
       timer = setInterval(() => {
         showSlide((currentIndex + 1) % slides.length)
       }, Math.max(interval, 1) * 1000)
     }
+
+    toggleButton?.addEventListener('click', () => {
+      userPaused = !userPaused
+      if (userPaused) {
+        stopAutoplay()
+      } else {
+        startAutoplay()
+      }
+      updateToggleButton()
+    })
+
+    // Pause on hover
+    section.addEventListener('mouseenter', () => {
+      isHoveredOrFocused = true
+      stopAutoplay()
+    })
+    section.addEventListener('mouseleave', () => {
+      isHoveredOrFocused = false
+      startAutoplay()
+    })
+
+    // Pause on focus within carousel
+    section.addEventListener('focusin', () => {
+      isHoveredOrFocused = true
+      stopAutoplay()
+    })
+    section.addEventListener('focusout', (event) => {
+      const related = (event as FocusEvent).relatedTarget as Node | null
+      if (!section.contains(related)) {
+        isHoveredOrFocused = false
+        startAutoplay()
+      }
+    })
 
     dots.forEach((dot, index) => {
       dot.addEventListener('click', () => {
@@ -380,6 +479,9 @@ const sortedTestimonials = [...testimonials].sort(
       })
     })
 
-    startAutoplay()
+    if (!userPaused) {
+      startAutoplay()
+    }
+    updateToggleButton()
   })
 </script>
