@@ -59,25 +59,44 @@ const duplicatedBrands = [...sortedBrands, ...sortedBrands]
         style={`--animation-duration: ${Math.max(animationSpeed, 5)}s`}
       >
         {duplicatedBrands.map((brand, index) => (
-          <a
-            class="brand-logo"
-            href={brand.websiteUrl ?? '#'}
-            target={brand.websiteUrl ? '_blank' : undefined}
-            rel={brand.websiteUrl ? 'noopener noreferrer' : undefined}
-            aria-label={brand.brandName}
-            key={`${brand.brandName}-${index}`}
-          >
-            {brand.logo?.asset && (
-              <img
-                src={urlFor(brand.logo)
-                  .width(400)
-                  .fit('max')
-                  .url()}
-                alt={brand.logo.alt ?? brand.brandName ?? ''}
-                loading="lazy"
-              />
-            )}
-          </a>
+          brand.websiteUrl ? (
+            <a
+              class="brand-logo"
+              href={brand.websiteUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={brand.brandName}
+              key={`${brand.brandName}-${index}`}
+            >
+              {brand.logo?.asset && (
+                <img
+                  src={urlFor(brand.logo)
+                    .width(400)
+                    .fit('max')
+                    .url()}
+                  alt={brand.logo.alt ?? brand.brandName ?? ''}
+                  loading="lazy"
+                />
+              )}
+            </a>
+          ) : (
+            <span
+              class="brand-logo"
+              aria-label={brand.brandName}
+              key={`${brand.brandName}-${index}`}
+            >
+              {brand.logo?.asset && (
+                <img
+                  src={urlFor(brand.logo)
+                    .width(400)
+                    .fit('max')
+                    .url()}
+                  alt={brand.logo.alt ?? brand.brandName ?? ''}
+                  loading="lazy"
+                />
+              )}
+            </span>
+          )
         ))}
       </div>
     </div>

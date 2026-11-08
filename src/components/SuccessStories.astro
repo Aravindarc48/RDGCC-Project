@@ -132,42 +132,80 @@ const getIconPath = (name?: string) => {
           <p class="story-description">{story.description}</p>
 
           <!-- Case Study Link -->
-          <a class="story-link" href={story.linkUrl ?? '#'}>
-            {story.linkText}
-            <span class="link-arrow" aria-hidden="true"></span>
-          </a>
+          {story.linkUrl ? (
+            <a class="story-link" href={story.linkUrl}>
+              {story.linkText}
+              <span class="link-arrow" aria-hidden="true"></span>
+            </a>
+          ) : story.linkText ? (
+            <span class="story-link">
+              {story.linkText}
+            </span>
+          ) : null}
 
         </div>
       </article>
     ))}
 
     <!-- More Stories Card -->
-    <a class="more-stories-card" href={moreStoriesLinkUrl ?? '#'}>
-      <div class="more-stories-icon">
-        {getIconPath(moreStoriesIcon) && (
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.6"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            aria-hidden="true"
-          >
-            <path d={getIconPath(moreStoriesIcon)} />
-          </svg>
+    {moreStoriesLinkUrl ? (
+      <a class="more-stories-card" href={moreStoriesLinkUrl}>
+        <div class="more-stories-icon">
+          {getIconPath(moreStoriesIcon) && (
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d={getIconPath(moreStoriesIcon)} />
+            </svg>
+          )}
+        </div>
+
+        {moreStoriesLabel && <span class="more-label">{moreStoriesLabel}</span>}
+
+        {moreStoriesTitle && <h3>{moreStoriesTitle}</h3>}
+
+        {moreStoriesLinkText && (
+          <span class="more-link">
+            {moreStoriesLinkText}
+            <span class="link-arrow" aria-hidden="true"></span>
+          </span>
+        )}
+      </a>
+    ) : (
+      <div class="more-stories-card">
+        <div class="more-stories-icon">
+          {getIconPath(moreStoriesIcon) && (
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d={getIconPath(moreStoriesIcon)} />
+            </svg>
+          )}
+        </div>
+
+        {moreStoriesLabel && <span class="more-label">{moreStoriesLabel}</span>}
+
+        {moreStoriesTitle && <h3>{moreStoriesTitle}</h3>}
+
+        {moreStoriesLinkText && (
+          <span class="more-link">
+            {moreStoriesLinkText}
+          </span>
         )}
       </div>
-
-      <span class="more-label">{moreStoriesLabel}</span>
-
-      <h3>{moreStoriesTitle}</h3>
-
-      <span class="more-link">
-        {moreStoriesLinkText}
-        <span class="link-arrow" aria-hidden="true"></span>
-      </span>
-    </a>
+    )}
   </div>
 </section>
 

@@ -75,7 +75,7 @@ const socialIcons: Record<string, string> = {
         {brandLogoUrl && (
           <img
             src={brandLogoUrl}
-            alt="Brand logo"
+            alt={brandLogo?.alt ?? ''}
             class="footer-logo"
             loading="lazy"
           />
@@ -88,7 +88,7 @@ const socialIcons: Record<string, string> = {
         {partnerLogoUrl && (
           <img
             src={partnerLogoUrl}
-            alt="Partner logo"
+            alt={partnerLogo?.alt ?? ''}
             class="partner-logo"
             loading="lazy"
           />
@@ -105,9 +105,13 @@ const socialIcons: Record<string, string> = {
           <ul>
             {column.links?.map((link) => (
               <li>
-                <a href={link.url ?? '#'}>
-                  {link.label}
-                </a>
+                {link.url ? (
+                  <a href={link.url}>
+                    {link.label}
+                  </a>
+                ) : (
+                  <span>{link.label}</span>
+                )}
               </li>
             ))}
           </ul>
@@ -145,15 +149,24 @@ const socialIcons: Record<string, string> = {
 
         <div class="social-links">
           {socialLinks.map((social) => (
-            <a
-              href={social.url ?? '#'}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={social.platform}
-              class="social-link"
-            >
-              {socialIcons[social.platform ?? ''] ?? '↗'}
-            </a>
+            social.url ? (
+              <a
+                href={social.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={social.platform}
+                class="social-link"
+              >
+                {socialIcons[social.platform ?? ''] ?? '↗'}
+              </a>
+            ) : (
+              <span
+                aria-label={social.platform}
+                class="social-link"
+              >
+                {socialIcons[social.platform ?? ''] ?? '↗'}
+              </span>
+            )
           ))}
         </div>
       </div>
@@ -165,9 +178,13 @@ const socialIcons: Record<string, string> = {
 
       <div class="footer-bottom-links">
         {bottomLinks.map((link) => (
-          <a href={link.url ?? '#'}>
-            {link.label}
-          </a>
+          link.url ? (
+            <a href={link.url}>
+              {link.label}
+            </a>
+          ) : (
+            <span>{link.label}</span>
+          )
         ))}
       </div>
 

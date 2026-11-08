@@ -76,24 +76,19 @@ const {
     </div>
 
     <!-- Sanity CMS Hero Image -->
-    <div class="relative mx-auto w-full max-w-lg">
-      {heroImageUrl ? (
+    {heroImageUrl && (
+      <div class="relative mx-auto w-full max-w-lg">
         <img
           src={heroImageUrl}
-          alt={heroImageAlt}
+          alt={heroImageAlt ?? ''}
           width="1200"
           height="1200"
           loading="eager"
           fetchpriority="high"
           class="h-auto w-full rounded-3xl object-cover"
         />
-      ) : (
-        <div class="flex aspect-square items-center justify-center
-                    rounded-3xl bg-blue-50 text-blue-900">
-          <p class="text-sm">Hero image coming soon</p>
-        </div>
-      )}
-    </div>
+      </div>
+    )}
 
   </div>
 </section>
