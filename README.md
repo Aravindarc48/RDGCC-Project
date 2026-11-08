@@ -171,12 +171,12 @@ Every piece of copy, media, navigation, and CTA on the page is driven dynamicall
 - **Accessible Carousel & Motion:** Client appreciation carousel includes explicit pause/play toggle controls, automatically pauses on hover (`mouseenter`) and keyboard focus (`focusin`), and respects user system preferences by disabling autoplay when `prefers-reduced-motion: reduce` is detected.
 - **Image Optimization:** Dynamic Sanity images include explicit `width` and `height` attributes to prevent Cumulative Layout Shift (CLS), responsive `srcset` and `sizes`, modern format delivery (`.auto('format')` for WebP/AVIF), and asynchronous decoding. The hero image is loaded eagerly with `fetchpriority="high"`, while below-the-fold media loads lazily.
 - **Unified GROQ Fetching & Defensive Rendering:** Replaced sequential API requests with a unified GROQ query fetching all 10 page sections in a single round-trip, significantly reducing build times and network overhead. Section rendering is guarded against empty DOM shells when collections are empty or null.
-- **SEO & Social Metadata:** Configured canonical URLs via `Astro.site`, dual SVG/ICO favicons, Open Graph / Twitter Card tags, and dynamic **JSON-LD Schema.org Structured Data** (`Organization`, `WebSite`, `WebPage`) generated dynamically from CMS fields.
+- **SEO & Search Indexing:** Configured canonical URLs via `Astro.site`, dual SVG/ICO favicons, Open Graph / Twitter Card tags, auto-generated XML Sitemap (`sitemap-index.xml`), `robots.txt`, and dynamic **JSON-LD Schema.org Structured Data** (`Organization`, `WebSite`, `WebPage`) generated dynamically from CMS fields.
 
 ## Assessment Bonus Criteria Delivered
 
 - [x] **TypeScript Implementation:** Strict TypeScript types throughout (`PageData`, `HeroData`, `Navigation`, `SanityImage`, etc.) with zero runtime `any`.
-- [x] **SEO Enhancements:** Canonical tags, Open Graph, Twitter Cards, SVG/ICO dual favicons, and Schema.org JSON-LD structured data.
+- [x] **SEO Enhancements:** Canonical tags, Open Graph, Twitter Cards, SVG/ICO dual favicons, XML sitemap (`@astrojs/sitemap`), `robots.txt`, and Schema.org JSON-LD structured data.
 - [x] **Accessibility Compliance:** WCAG 2.1 AA aligned (single `<h1>`, logical heading order, screen-reader text, keyboard skip link, focus-visible styles, accessible carousel with pause/play & reduced motion).
 - [x] **Performance Optimization:** Single-trip root GROQ query projection (~26ms), responsive WebP/AVIF images with srcset, zero layout shift (CLS).
 - [x] **Responsive Polish:** Pixel-accurate responsive layouts on desktop, tablet, and mobile, including accordion mobile navigation and centered testimonial layout.

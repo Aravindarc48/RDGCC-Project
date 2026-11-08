@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://rdgcc-project.vercel.app/sitemap-index.xml
