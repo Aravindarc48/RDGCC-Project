@@ -155,6 +155,19 @@ Studio URL: https://rdgcc-cms.sanity.studio
 - Public website content is managed through Sanity Studio.
 - The frontend and CMS are deployed independently.
 
+## Accessibility and Performance
+
+- **Heading Hierarchy & Landmarks:** Structured with a single `<h1>` for the page (`Hero`), logical `<h2>` / `<h3>` heading levels, screen-reader-accessible section labels (`.sr-only`), and semantic landmarks (`<main id="main-content">`, `<nav>`, `<header>`, `<footer>`).
+- **Keyboard Navigation & Skip Link:** Added an accessible "Skip to main content" link targeting `#main-content`, high-contrast visible focus rings (`:focus-visible`) across all interactive links and buttons, and removed non-interactive tab stops (`tabindex="0"`) from static content cards.
+- **Accessible Carousel & Motion:** Client appreciation carousel includes explicit pause/play toggle controls, automatically pauses on hover (`mouseenter`) and keyboard focus (`focusin`), and respects user system preferences by disabling autoplay when `prefers-reduced-motion: reduce` is detected.
+- **Image Optimization:** Dynamic Sanity images include explicit `width` and `height` attributes to prevent Cumulative Layout Shift (CLS), responsive `srcset` and `sizes`, modern format delivery (`.auto('format')` for WebP/AVIF), and asynchronous decoding. The hero image is loaded eagerly with `fetchpriority="high"`, while below-the-fold media loads lazily.
+- **Unified GROQ Fetching & Defensive Rendering:** Replaced sequential API requests with a unified GROQ query fetching all 10 page sections in a single round-trip, significantly reducing build times and network overhead. Section rendering is guarded against empty DOM shells when collections are empty or null.
+- **SEO & Social Metadata:** Configured canonical URLs via `Astro.site`, dual SVG/ICO favicons, and Open Graph / Twitter Card tags populated dynamically from Sanity SEO fields.
+
+## Tooling & Methodology Note
+
+AI tools were used for guidance, technical assessment auditing, and code review. All code changes, schemas, queries, and accessibility improvements were reviewed, verified, and validated against the technical requirements.
+
 ## Author
 
 Aravindar C
