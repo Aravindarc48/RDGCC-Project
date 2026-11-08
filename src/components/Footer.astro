@@ -56,11 +56,11 @@ const {
 } = Astro.props
 
 const brandLogoUrl = brandLogo?.asset
-  ? urlFor(brandLogo).width(300).url()
+  ? urlFor(brandLogo).width(360).auto('format').url()
   : ''
 
 const partnerLogoUrl = partnerLogo?.asset
-  ? urlFor(partnerLogo).width(200).url()
+  ? urlFor(partnerLogo).width(170).height(170).fit('crop').auto('format').url()
   : ''
 
 const socialIcons: Record<string, string> = {
@@ -83,9 +83,17 @@ const socialIcons: Record<string, string> = {
         {brandLogoUrl && (
           <img
             src={brandLogoUrl}
+            srcset={`
+              ${urlFor(brandLogo).width(180).auto('format').url()} 180w,
+              ${urlFor(brandLogo).width(360).auto('format').url()} 360w
+            `}
+            sizes="180px"
+            width="180"
+            height="55"
             alt={brandLogo?.alt ?? ''}
             class="footer-logo"
             loading="lazy"
+            decoding="async"
           />
         )}
 
@@ -96,9 +104,17 @@ const socialIcons: Record<string, string> = {
         {partnerLogoUrl && (
           <img
             src={partnerLogoUrl}
+            srcset={`
+              ${urlFor(partnerLogo).width(85).height(85).fit('crop').auto('format').url()} 85w,
+              ${urlFor(partnerLogo).width(170).height(170).fit('crop').auto('format').url()} 170w
+            `}
+            sizes="85px"
+            width="85"
+            height="85"
             alt={partnerLogo?.alt ?? ''}
             class="partner-logo"
             loading="lazy"
+            decoding="async"
           />
         )}
       </div>

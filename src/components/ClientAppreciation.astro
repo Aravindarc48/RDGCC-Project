@@ -62,9 +62,18 @@ const sortedTestimonials = [...testimonials].sort(
                     .width(300)
                     .height(300)
                     .fit('crop')
+                    .auto('format')
                     .url()}
+                  srcset={`
+                    ${urlFor(item.profileImage).width(150).height(150).fit('crop').auto('format').url()} 150w,
+                    ${urlFor(item.profileImage).width(300).height(300).fit('crop').auto('format').url()} 300w
+                  `}
+                  sizes="135px"
+                  width="135"
+                  height="135"
                   alt={item.profileImage.alt ?? item.personName}
                   loading={index === 0 ? 'eager' : 'lazy'}
+                  decoding={index === 0 ? 'sync' : 'async'}
                 />
               )}
             </div>

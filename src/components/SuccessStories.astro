@@ -100,9 +100,18 @@ const getIconPath = (name?: string) => {
                   .width(900)
                   .height(500)
                   .fit('crop')
+                  .auto('format')
                   .url()}
+                srcset={`
+                  ${urlFor(story.image).width(450).height(250).fit('crop').auto('format').url()} 450w,
+                  ${urlFor(story.image).width(900).height(500).fit('crop').auto('format').url()} 900w
+                `}
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 400px"
+                width="900"
+                height="500"
                 alt={story.image.alt ?? story.clientName ?? ''}
                 loading="lazy"
+                decoding="async"
               />
             </div>
           )}

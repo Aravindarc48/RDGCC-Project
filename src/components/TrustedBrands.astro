@@ -73,9 +73,18 @@ const duplicatedBrands = [...sortedBrands, ...sortedBrands]
                   src={urlFor(brand.logo)
                     .width(400)
                     .fit('max')
+                    .auto('format')
                     .url()}
+                  srcset={`
+                    ${urlFor(brand.logo).width(200).fit('max').auto('format').url()} 200w,
+                    ${urlFor(brand.logo).width(400).fit('max').auto('format').url()} 400w
+                  `}
+                  sizes="200px"
+                  width="200"
+                  height="65"
                   alt={brand.logo.alt ?? brand.brandName ?? ''}
                   loading="lazy"
+                  decoding="async"
                 />
               )}
             </a>
@@ -90,9 +99,18 @@ const duplicatedBrands = [...sortedBrands, ...sortedBrands]
                   src={urlFor(brand.logo)
                     .width(400)
                     .fit('max')
+                    .auto('format')
                     .url()}
+                  srcset={`
+                    ${urlFor(brand.logo).width(200).fit('max').auto('format').url()} 200w,
+                    ${urlFor(brand.logo).width(400).fit('max').auto('format').url()} 400w
+                  `}
+                  sizes="200px"
+                  width="200"
+                  height="65"
                   alt={brand.logo.alt ?? brand.brandName ?? ''}
                   loading="lazy"
+                  decoding="async"
                 />
               )}
             </span>
