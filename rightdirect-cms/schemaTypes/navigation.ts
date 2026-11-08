@@ -73,7 +73,6 @@ const navigationItem = {
           { title: 'Mega Menu', value: 'mega' },
         ],
       },
-      initialValue: 'link',
     }),
     defineField({
       name: 'groups',
@@ -93,13 +92,11 @@ export const navigation = defineType({
       name: 'logoText',
       title: 'Logo Text',
       type: 'string',
-      initialValue: 'RightDirect',
     }),
     defineField({
       name: 'logoHref',
       title: 'Logo URL',
       type: 'string',
-      initialValue: '/',
     }),
     defineField({
       name: 'items',
@@ -111,13 +108,11 @@ export const navigation = defineType({
       name: 'ctaText',
       title: 'CTA Button Text',
       type: 'string',
-      initialValue: 'Get Started',
     }),
     defineField({
       name: 'ctaLink',
       title: 'CTA Button URL',
       type: 'string',
-      initialValue: '/contact',
     }),
   ],
 })

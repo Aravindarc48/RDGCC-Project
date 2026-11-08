@@ -67,6 +67,39 @@ try {
 }
 
 const SKIP_LINK_TEXT = 'Skip to main content'
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Organization',
+      '@id': `${canonicalURL}#organization`,
+      ...(navigation?.logoText ? { name: navigation.logoText } : {}),
+      url: canonicalURL,
+    },
+    {
+      '@type': 'WebSite',
+      '@id': `${canonicalURL}#website`,
+      url: canonicalURL,
+      ...(title ? { name: title } : {}),
+      ...(description ? { description } : {}),
+      publisher: {
+        '@id': `${canonicalURL}#organization`,
+      },
+    },
+    {
+      '@type': 'WebPage',
+      '@id': canonicalURL,
+      url: canonicalURL,
+      ...(title ? { name: title } : {}),
+      ...(description ? { description } : {}),
+      isPartOf: {
+        '@id': `${canonicalURL}#website`,
+      },
+      ...(ogImageUrl ? { primaryImageOfPage: { '@type': 'ImageObject', url: ogImageUrl } } : {}),
+    },
+  ],
+}
 ---
 
 <!DOCTYPE html>
@@ -101,6 +134,9 @@ const SKIP_LINK_TEXT = 'Skip to main content'
     {title && <meta name="twitter:title" content={title} />}
     {description && <meta name="twitter:description" content={description} />}
     {ogImageUrl && <meta name="twitter:image" content={ogImageUrl} />}
+
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
   </head>
 
   <body>

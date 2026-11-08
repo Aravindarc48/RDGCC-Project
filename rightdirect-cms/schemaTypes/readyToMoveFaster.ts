@@ -36,7 +36,6 @@ export default defineType({
       name: 'overlayColor',
       title: 'Overlay Color',
       type: 'string',
-      initialValue: '#001B36',
       description: 'CSS color for the background overlay.',
     }),
 
@@ -44,7 +43,6 @@ export default defineType({
       name: 'overlayOpacity',
       title: 'Overlay Opacity',
       type: 'number',
-      initialValue: 0.65,
       validation: (Rule) => Rule.min(0).max(1),
       description: 'Enter a value between 0 and 1.',
     }),
@@ -67,7 +65,6 @@ export default defineType({
       name: 'sectionPadding',
       title: 'Section Padding (px)',
       type: 'number',
-      initialValue: 60,
       description: 'Controls the vertical spacing of the section.',
     }),
 
@@ -75,28 +72,24 @@ export default defineType({
       name: 'headingColor',
       title: 'Heading Color',
       type: 'string',
-      initialValue: '#FFFFFF',
     }),
 
     defineField({
       name: 'descriptionColor',
       title: 'Description Color',
       type: 'string',
-      initialValue: '#FFFFFF',
     }),
 
     defineField({
       name: 'buttonColor',
       title: 'Button Background Color',
       type: 'string',
-      initialValue: '#064F8C',
     }),
 
     defineField({
       name: 'buttonTextColor',
       title: 'Button Text Color',
       type: 'string',
-      initialValue: '#FFFFFF',
     }),
   ],
 })

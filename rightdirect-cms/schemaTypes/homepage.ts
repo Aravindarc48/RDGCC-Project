@@ -17,7 +17,6 @@ export const homepage = defineType({
         name: 'heroEyebrow',
         title: 'Hero Eyebrow / Tagline',
         type: 'string',
-        initialValue: 'Strategy · Technology · Execution',
     }),
 
     defineField({
@@ -67,15 +66,12 @@ export const homepage = defineType({
   name: 'statsHeading',
   title: 'Stats Section Heading',
   type: 'string',
-  initialValue: 'The track record',
 }),
 
 defineField({
   name: 'statsDescription',
   title: 'Stats Section Description',
   type: 'text',
-  initialValue:
-    'Delivered across industries, growth stages, and geographies.',
 }),
 
 defineField({
@@ -102,11 +98,6 @@ defineField({
         }),
       ],
     }),
-  ],
-  initialValue: [
-    { value: '70+', label: 'Clients' },
-    { value: '90+', label: 'Projects' },
-    { value: '10+', label: 'Industries Served Globally' },
   ],
 }),
 

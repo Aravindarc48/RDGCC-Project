@@ -33,18 +33,25 @@ const { navigation } = Astro.props
 const navItems = navigation?.items ?? []
 
 const logoText = navigation?.logoText
-const logoHref = navigation?.logoHref ?? '/'
+const logoHref = navigation?.logoHref
 const ctaText = navigation?.ctaText
 const ctaLink = navigation?.ctaLink
-const brandAriaLabel = logoText ? `${logoText} homepage` : 'Homepage'
+const brandAriaLabel = logoText ? `${logoText} homepage` : undefined
 ---
 
 <header class="site-header">
   <nav class="navbar" aria-label="Main navigation">
-    <a href={logoHref} class="brand" aria-label={brandAriaLabel}>
-      {logoText && <span>{logoText}</span>}
-      <span class="brand-arrows">»»</span>
-    </a>
+    {logoHref ? (
+      <a href={logoHref} class="brand" aria-label={brandAriaLabel}>
+        {logoText && <span>{logoText}</span>}
+        <span class="brand-arrows">»»</span>
+      </a>
+    ) : (
+      <span class="brand" aria-label={brandAriaLabel}>
+        {logoText && <span>{logoText}</span>}
+        <span class="brand-arrows">»»</span>
+      </span>
+    )}
 
     <button
       class="mobile-toggle"

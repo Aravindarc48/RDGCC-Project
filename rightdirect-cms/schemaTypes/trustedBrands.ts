@@ -11,7 +11,6 @@ export default defineType({
       name: 'sectionTitle',
       title: 'Section Title',
       type: 'string',
-      initialValue: 'Trusted by global brands',
       validation: (Rule) => Rule.required(),
     }),
 
@@ -70,7 +69,6 @@ export default defineType({
       name: 'animationSpeed',
       title: 'Animation Speed (seconds)',
       type: 'number',
-      initialValue: 30,
       description: 'Higher values make the logo animation slower.',
     }),
   ],

@@ -29,15 +29,15 @@ const {
   sectionTitle,
   description,
   backgroundImage,
-  overlayColor = '#001B36',
-  overlayOpacity = 0.65,
+  overlayColor,
+  overlayOpacity,
   buttonText,
   buttonUrl,
-  sectionPadding = 60,
-  headingColor = '#FFFFFF',
-  descriptionColor = '#FFFFFF',
-  buttonColor = '#064F8C',
-  buttonTextColor = '#FFFFFF',
+  sectionPadding,
+  headingColor,
+  descriptionColor,
+  buttonColor,
+  buttonTextColor,
 } = Astro.props
 
 const backgroundImageUrl = backgroundImage?.asset
@@ -48,16 +48,14 @@ const backgroundImageUrl = backgroundImage?.asset
 <section
   class="ready-section"
   style={`
-    --overlay-color: ${overlayColor};
-    --overlay-opacity: ${overlayOpacity};
-    --section-padding: ${sectionPadding}px;
-    --heading-color: ${headingColor};
-    --description-color: ${descriptionColor};
-    --button-color: ${buttonColor};
-    --button-text-color: ${buttonTextColor};
-    ${backgroundImageUrl
-      ? `--background-image: url("${backgroundImageUrl}");`
-      : ''}
+    ${overlayColor ? `--overlay-color: ${overlayColor};` : ''}
+    ${overlayOpacity !== undefined ? `--overlay-opacity: ${overlayOpacity};` : ''}
+    ${sectionPadding !== undefined ? `--section-padding: ${sectionPadding}px;` : ''}
+    ${headingColor ? `--heading-color: ${headingColor};` : ''}
+    ${descriptionColor ? `--description-color: ${descriptionColor};` : ''}
+    ${buttonColor ? `--button-color: ${buttonColor};` : ''}
+    ${buttonTextColor ? `--button-text-color: ${buttonTextColor};` : ''}
+    ${backgroundImageUrl ? `--background-image: url("${backgroundImageUrl}");` : ''}
   `}
 >
   <div class="ready-content">

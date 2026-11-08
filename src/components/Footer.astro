@@ -181,14 +181,14 @@ const socialIcons: Record<string, string> = {
                 aria-label={social.platform}
                 class="social-link"
               >
-                {socialIcons[social.platform ?? ''] ?? '↗'}
+                <span aria-hidden="true">{socialIcons[social.platform ?? ''] ?? ''}</span>
               </a>
             ) : (
               <span
                 aria-label={social.platform}
                 class="social-link"
               >
-                {socialIcons[social.platform ?? ''] ?? '↗'}
+                <span aria-hidden="true">{socialIcons[social.platform ?? ''] ?? ''}</span>
               </span>
             )
           ))}
