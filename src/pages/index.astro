@@ -135,6 +135,20 @@ interface TrustedBrandsSection {
   }[]
 }
 
+interface SanityImageCrop {
+  top?: number
+  bottom?: number
+  left?: number
+  right?: number
+}
+
+interface SanityImageHotspot {
+  x?: number
+  y?: number
+  width?: number
+  height?: number
+}
+
 interface ClientTestimonial {
   companyName: string
   country?: string
@@ -147,8 +161,8 @@ interface ClientTestimonial {
       _type: string
     }
     alt?: string
-    crop?: any
-    hotspot?: any
+    crop?: SanityImageCrop
+    hotspot?: SanityImageHotspot
   }
   order?: number
 }
@@ -175,18 +189,8 @@ interface WhoWeWorkWithSection {
         _type?: string
       }
       alt?: string
-      crop?: {
-        top: number
-        bottom: number
-        left: number
-        right: number
-      }
-      hotspot?: {
-        x: number
-        y: number
-        width: number
-        height: number
-      }
+      crop?: SanityImageCrop
+      hotspot?: SanityImageHotspot
     }
   }[]
 }
@@ -200,8 +204,8 @@ interface ReadyToMoveFasterSection {
       _type?: string
     }
     alt?: string
-    crop?: any
-    hotspot?: any
+    crop?: SanityImageCrop
+    hotspot?: SanityImageHotspot
   }
   overlayColor?: string
   overlayOpacity?: number
@@ -213,6 +217,26 @@ interface ReadyToMoveFasterSection {
   buttonColor?: string
   buttonTextColor?: string
 }
+
+interface FAQQuestion {
+  question: string
+  answer: string
+  linkText?: string
+  linkUrl?: string
+}
+
+interface FAQCategory {
+  categoryTitle: string
+  questions: FAQQuestion[]
+}
+
+interface FAQSection {
+  sectionTitle?: string
+  categories?: FAQCategory[]
+  buttonText?: string
+  buttonUrl?: string
+}
+
 interface FooterData {
   brandLogo?: {
     asset?: {
@@ -252,151 +276,153 @@ interface FooterData {
   copyrightText?: string
 }
 
-const homepageQuery = `*[_type == "homepage"][0]{
-  title,
-  heroEyebrow,
-  heroHeading,
-  heroDescription,
-  heroImage{
-    asset,
-    alt,
-    crop,
-    hotspot
-  },
-  ctaText,
-  ctaLink,
-  statsHeading,
-  statsDescription,
-  stats[]{
-    value,
-    label
-  },
-  seoTitle,
-  seoDescription
-}`
+interface PageData {
+  homepage: Homepage | null
+  services: ServicesSection | null
+  howWeWork: HowWeWorkSection | null
+  successStories: SuccessStoriesSection | null
+  trustedBrands: TrustedBrandsSection | null
+  clientAppreciation: ClientAppreciationSection | null
+  whoWeWorkWith: WhoWeWorkWithSection | null
+  faq: FAQSection | null
+  readyToMoveFaster: ReadyToMoveFasterSection | null
+  footer: FooterData | null
+}
 
-const servicesQuery = `*[_type == "servicesSection"][0]{
-  sectionTitle,
-  cards[]{
-    heading,
-    description,
-    linkText,
-    linkUrl
-  }
-}`
-
-const howWeWorkQuery = `*[_type == "howWeWork"][0]{
-  sectionTitle,
-  sectionDescription,
-  steps[]{
-    stepNumber,
-    icon,
+const pageQuery = `{
+  "homepage": *[_type == "homepage"][0]{
     title,
-    description
-  }
-}`
-
-
-const successStoriesQuery = `*[_type == "successStories"][0]{
-  sectionTitle,
-  sectionDescription,
-  stories[]{
-    industry,
-    location,
-    clientName,
-    icon,
-    title,
-    description,
-    linkText,
-    linkUrl,
-    image{
+    heroEyebrow,
+    heroHeading,
+    heroDescription,
+    heroImage{
       asset,
       alt,
       crop,
       hotspot
+    },
+    ctaText,
+    ctaLink,
+    statsHeading,
+    statsDescription,
+    stats[]{
+      value,
+      label
+    },
+    seoTitle,
+    seoDescription
+  },
+  "services": *[_type == "servicesSection"][0]{
+    sectionTitle,
+    cards[]{
+      heading,
+      description,
+      linkText,
+      linkUrl
     }
   },
-  moreStoriesIcon,
-  moreStoriesLabel,
-  moreStoriesTitle,
-  moreStoriesLinkText,
-  moreStoriesLinkUrl
-}`
-
-const trustedBrandsQuery = `*[_type == "trustedBrands"][0]{
-  sectionTitle,
-  animationSpeed,
-  brands[]{
-    brandName,
-    websiteUrl,
-    order,
-    logo{
-      asset,
-      alt,
-      crop,
-      hotspot
+  "howWeWork": *[_type == "howWeWork"][0]{
+    sectionTitle,
+    sectionDescription,
+    steps[]{
+      stepNumber,
+      icon,
+      title,
+      description
     }
-  }
-}`
-
-const clientAppreciationQuery = `
-  *[_type == "clientAppreciation"][0] {
+  },
+  "successStories": *[_type == "successStories"][0]{
+    sectionTitle,
+    sectionDescription,
+    stories[]{
+      industry,
+      location,
+      clientName,
+      icon,
+      title,
+      description,
+      linkText,
+      linkUrl,
+      image{
+        asset,
+        alt,
+        crop,
+        hotspot
+      }
+    },
+    moreStoriesIcon,
+    moreStoriesLabel,
+    moreStoriesTitle,
+    moreStoriesLinkText,
+    moreStoriesLinkUrl
+  },
+  "trustedBrands": *[_type == "trustedBrands"][0]{
+    sectionTitle,
+    animationSpeed,
+    brands[]{
+      brandName,
+      websiteUrl,
+      order,
+      logo{
+        asset,
+        alt,
+        crop,
+        hotspot
+      }
+    }
+  },
+  "clientAppreciation": *[_type == "clientAppreciation"][0]{
     sectionTitle,
     autoplayEnabled,
     autoplayInterval,
-    testimonials[] {
+    testimonials[]{
       companyName,
       country,
       testimonial,
       personName,
       personRole,
       order,
-      profileImage {
+      profileImage{
         asset,
         alt,
         crop,
         hotspot
       }
     }
-  }`
-
-const whoWeWorkWithQuery = `
-  *[_type == "whoWeWorkWith"][0] {
+  },
+  "whoWeWorkWith": *[_type == "whoWeWorkWith"][0]{
     sectionTitle,
     sectionDescription,
-    audiences[] {
+    audiences[]{
       title,
       description,
       order,
-      image {
+      image{
         asset,
         alt,
         crop,
         hotspot
       }
     }
-  }`
-
-const faqQuery = `*[_type == "faq"][0]{
-  sectionTitle,
-  categories[]{
-    categoryTitle,
-    questions[]{
-      question,
-      answer,
-      linkText,
-      linkUrl
-    }
   },
-  buttonText,
-  buttonUrl
-}`
-
-const readyToMoveFasterQuery = `
-  *[_type == "readyToMoveFaster"][0] {
+  "faq": *[_type == "faq"][0]{
+    sectionTitle,
+    categories[]{
+      categoryTitle,
+      questions[]{
+        question,
+        answer,
+        linkText,
+        linkUrl
+      }
+    },
+    buttonText,
+    buttonUrl
+  },
+  "readyToMoveFaster": *[_type == "readyToMoveFaster"][0]{
     sectionTitle,
     description,
-    backgroundImage {
+    backgroundImage{
       asset,
       alt,
       crop,
@@ -411,105 +437,71 @@ const readyToMoveFasterQuery = `
     descriptionColor,
     buttonColor,
     buttonTextColor
-  }`
-const footerQuery = `*[_type == "footer"][0]{
-  brandLogo{
-    asset,
-    alt,
-    crop,
-    hotspot
   },
-  brandDescription,
-  partnerLogo{
-    asset,
-    alt,
-    crop,
-    hotspot
-  },
-  linkColumns[]{
-    columnTitle,
-    links[]{
+  "footer": *[_type == "footer"][0]{
+    brandLogo{
+      asset,
+      alt,
+      crop,
+      hotspot
+    },
+    brandDescription,
+    partnerLogo{
+      asset,
+      alt,
+      crop,
+      hotspot
+    },
+    linkColumns[]{
+      columnTitle,
+      links[]{
+        label,
+        url
+      }
+    },
+    contactTitle,
+    email,
+    phone,
+    address,
+    socialTitle,
+    socialLinks[]{
+      platform,
+      url
+    },
+    bottomLinks[]{
       label,
       url
-    }
-  },
-  contactTitle,
-  email,
-  phone,
-  address,
-  socialTitle,
-  socialLinks[]{
-    platform,
-    url
-  },
-  bottomLinks[]{
-    label,
-    url
-  },
-  copyrightText
+    },
+    copyrightText
+  }
 }`
 
-let homepage: Homepage | null = null
-let services: ServicesSection | null = null
-let howWeWork: HowWeWorkSection | null = null
-let successStories: SuccessStoriesSection | null = null
-let trustedBrands: TrustedBrandsSection | null = null
-let clientAppreciation: ClientAppreciationSection | null = null
-let whoWeWorkWith: WhoWeWorkWithSection | null = null
-let faq = null
-let readyToMoveFaster: ReadyToMoveFasterSection | null = null
-let footer: FooterData | null = null
-
+let pageData: PageData | null = null
 let error = false
 
 try {
-  homepage = await sanityClient.fetch<Homepage | null>(
-    homepageQuery
-  )
+  pageData = await sanityClient.fetch<PageData>(pageQuery)
 
-  services = await sanityClient.fetch<ServicesSection | null>(
-    servicesQuery
-  )
-
-  howWeWork = await sanityClient.fetch<HowWeWorkSection | null>(
-    howWeWorkQuery
-  )
-
-  successStories = await sanityClient.fetch<SuccessStoriesSection | null>(
-    successStoriesQuery
-  )
-
-  trustedBrands = await sanityClient.fetch<TrustedBrandsSection | null>(
-    trustedBrandsQuery
-  )
-  clientAppreciation = await sanityClient.fetch<ClientAppreciationSection | null>(
-  	clientAppreciationQuery
-  )
-  whoWeWorkWith = await sanityClient.fetch<WhoWeWorkWithSection | null>(
-  	whoWeWorkWithQuery
-  )
-  faq = await sanityClient.fetch(
-	faqQuery
-  )
-
-  readyToMoveFaster = await sanityClient.fetch<ReadyToMoveFasterSection | null>(
-    readyToMoveFasterQuery
-  )
-  footer = await sanityClient.fetch<FooterData | null>(
-	footerQuery
-  )
-
-  if (homepage?.heroImage?.asset) {
-    homepage.heroImageUrl = urlFor(homepage.heroImage)
+  if (pageData?.homepage?.heroImage?.asset) {
+    pageData.homepage.heroImageUrl = urlFor(pageData.homepage.heroImage)
       .width(1200)
       .url()
   }
-
 } catch (err) {
   console.error('Failed to fetch content from Sanity:', err)
   error = true
 }
 
+const homepage = pageData?.homepage ?? null
+const services = pageData?.services ?? null
+const howWeWork = pageData?.howWeWork ?? null
+const successStories = pageData?.successStories ?? null
+const trustedBrands = pageData?.trustedBrands ?? null
+const clientAppreciation = pageData?.clientAppreciation ?? null
+const whoWeWorkWith = pageData?.whoWeWorkWith ?? null
+const faq = pageData?.faq ?? null
+const readyToMoveFaster = pageData?.readyToMoveFaster ?? null
+const footer = pageData?.footer ?? null
 ---
 
 <Layout
@@ -529,98 +521,121 @@ try {
       </section>
     ) : (
       <>
-        <Hero
-          eyebrow={homepage?.heroEyebrow}
-          heading={homepage?.heroHeading}
-          description={homepage?.heroDescription}
-          ctaText={homepage?.ctaText}
-          ctaLink={homepage?.ctaLink}
-          heroImageUrl={homepage?.heroImageUrl}
-          heroImageAlt={homepage?.heroImage?.alt}
-        />
+        {homepage && (
+          <Hero
+            eyebrow={homepage.heroEyebrow}
+            heading={homepage.heroHeading}
+            description={homepage.heroDescription}
+            ctaText={homepage.ctaText}
+            ctaLink={homepage.ctaLink}
+            heroImageUrl={homepage.heroImageUrl}
+            heroImageAlt={homepage.heroImage?.alt}
+          />
+        )}
 
-        <Stats
-          heading={homepage?.statsHeading}
-          description={homepage?.statsDescription}
-          stats={homepage?.stats}
-        />
+        {homepage?.stats && homepage.stats.length > 0 && (
+          <Stats
+            heading={homepage.statsHeading}
+            description={homepage.statsDescription}
+            stats={homepage.stats}
+          />
+        )}
 
-        <Services
-          sectionTitle={services?.sectionTitle}
-          cards={services?.cards}
-        />
-		<HowWeWork
-  			heading={howWeWork?.sectionTitle}
-  			description={howWeWork?.sectionDescription}
-  			steps={howWeWork?.steps}
-		/>
-		<SuccessStories
-  			heading={successStories?.sectionTitle}
-  			description={successStories?.sectionDescription}
-  			stories={successStories?.stories}
-  			moreStoriesIcon={successStories?.moreStoriesIcon}
-  			moreStoriesLabel={successStories?.moreStoriesLabel}
-  			moreStoriesTitle={successStories?.moreStoriesTitle}
-  			moreStoriesLinkText={successStories?.moreStoriesLinkText}
-  			moreStoriesLinkUrl={successStories?.moreStoriesLinkUrl}
-		/>
-		<TrustedBrands
-  			sectionTitle={trustedBrands?.sectionTitle}
-  			brands={trustedBrands?.brands}
-  			animationSpeed={trustedBrands?.animationSpeed}
-		/>
-		<ClientAppreciation
-  			sectionTitle={clientAppreciation?.sectionTitle}
-  			autoplayEnabled={clientAppreciation?.autoplayEnabled}
-  			autoplayInterval={clientAppreciation?.autoplayInterval}
-  			testimonials={clientAppreciation?.testimonials}
-		/>
-		<WhoWeWorkWith
-  			sectionTitle={whoWeWorkWith?.sectionTitle}
-  			sectionDescription={whoWeWorkWith?.sectionDescription}
-  			audiences={whoWeWorkWith?.audiences}
-		/>
-		{faq && (
-  			<FAQ
-    			sectionTitle={faq.sectionTitle}
-    			categories={faq.categories}
-    			buttonText={faq.buttonText}
-    			buttonUrl={faq.buttonUrl}
-  			/>
-		)}
-		{readyToMoveFaster && (
-  			<ReadyToMoveFaster
-    			sectionTitle={readyToMoveFaster.sectionTitle}
-    			description={readyToMoveFaster.description}
-    			backgroundImage={readyToMoveFaster.backgroundImage}
-    			overlayColor={readyToMoveFaster.overlayColor}
-    			overlayOpacity={readyToMoveFaster.overlayOpacity}
-    			buttonText={readyToMoveFaster.buttonText}
-    			buttonUrl={readyToMoveFaster.buttonUrl}
-    			sectionPadding={readyToMoveFaster.sectionPadding}
-    			headingColor={readyToMoveFaster.headingColor}
-    			descriptionColor={readyToMoveFaster.descriptionColor}
-    			buttonColor={readyToMoveFaster.buttonColor}
-    			buttonTextColor={readyToMoveFaster.buttonTextColor}
-  			/>
-		)}
-		{footer && (
-  			<Footer
-    			brandLogo={footer.brandLogo}
-    			brandDescription={footer.brandDescription}
-    			partnerLogo={footer.partnerLogo}
-    			linkColumns={footer.linkColumns}
-    			contactTitle={footer.contactTitle}
-    			email={footer.email}
-    			phone={footer.phone}
-    			address={footer.address}
-    			socialTitle={footer.socialTitle}
-    			socialLinks={footer.socialLinks}
-    			bottomLinks={footer.bottomLinks}
-    			copyrightText={footer.copyrightText}
-  			/>
-		)}
-		
+        {services?.cards && services.cards.length > 0 && (
+          <Services
+            sectionTitle={services.sectionTitle}
+            cards={services.cards}
+          />
+        )}
+
+        {howWeWork?.steps && howWeWork.steps.length > 0 && (
+          <HowWeWork
+            heading={howWeWork.sectionTitle}
+            description={howWeWork.sectionDescription}
+            steps={howWeWork.steps}
+          />
+        )}
+
+        {successStories?.stories && successStories.stories.length > 0 && (
+          <SuccessStories
+            heading={successStories.sectionTitle}
+            description={successStories.sectionDescription}
+            stories={successStories.stories}
+            moreStoriesIcon={successStories.moreStoriesIcon}
+            moreStoriesLabel={successStories.moreStoriesLabel}
+            moreStoriesTitle={successStories.moreStoriesTitle}
+            moreStoriesLinkText={successStories.moreStoriesLinkText}
+            moreStoriesLinkUrl={successStories.moreStoriesLinkUrl}
+          />
+        )}
+
+        {trustedBrands?.brands && trustedBrands.brands.length > 0 && (
+          <TrustedBrands
+            sectionTitle={trustedBrands.sectionTitle}
+            brands={trustedBrands.brands}
+            animationSpeed={trustedBrands.animationSpeed}
+          />
+        )}
+
+        {clientAppreciation?.testimonials && clientAppreciation.testimonials.length > 0 && (
+          <ClientAppreciation
+            sectionTitle={clientAppreciation.sectionTitle}
+            autoplayEnabled={clientAppreciation.autoplayEnabled}
+            autoplayInterval={clientAppreciation.autoplayInterval}
+            testimonials={clientAppreciation.testimonials}
+          />
+        )}
+
+        {whoWeWorkWith?.audiences && whoWeWorkWith.audiences.length > 0 && (
+          <WhoWeWorkWith
+            sectionTitle={whoWeWorkWith.sectionTitle}
+            sectionDescription={whoWeWorkWith.sectionDescription}
+            audiences={whoWeWorkWith.audiences}
+          />
+        )}
+
+        {faq?.categories && faq.categories.length > 0 && (
+          <FAQ
+            sectionTitle={faq.sectionTitle}
+            categories={faq.categories}
+            buttonText={faq.buttonText}
+            buttonUrl={faq.buttonUrl}
+          />
+        )}
+
+        {readyToMoveFaster && (
+          <ReadyToMoveFaster
+            sectionTitle={readyToMoveFaster.sectionTitle}
+            description={readyToMoveFaster.description}
+            backgroundImage={readyToMoveFaster.backgroundImage}
+            overlayColor={readyToMoveFaster.overlayColor}
+            overlayOpacity={readyToMoveFaster.overlayOpacity}
+            buttonText={readyToMoveFaster.buttonText}
+            buttonUrl={readyToMoveFaster.buttonUrl}
+            sectionPadding={readyToMoveFaster.sectionPadding}
+            headingColor={readyToMoveFaster.headingColor}
+            descriptionColor={readyToMoveFaster.descriptionColor}
+            buttonColor={readyToMoveFaster.buttonColor}
+            buttonTextColor={readyToMoveFaster.buttonTextColor}
+          />
+        )}
+
+        {footer && (
+          <Footer
+            brandLogo={footer.brandLogo}
+            brandDescription={footer.brandDescription}
+            partnerLogo={footer.partnerLogo}
+            linkColumns={footer.linkColumns}
+            contactTitle={footer.contactTitle}
+            email={footer.email}
+            phone={footer.phone}
+            address={footer.address}
+            socialTitle={footer.socialTitle}
+            socialLinks={footer.socialLinks}
+            bottomLinks={footer.bottomLinks}
+            copyrightText={footer.copyrightText}
+          />
+        )}
       </>
     )}
   </div>

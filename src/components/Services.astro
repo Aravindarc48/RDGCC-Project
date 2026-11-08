@@ -14,25 +14,27 @@ interface Props {
 const { sectionTitle, cards = [] } = Astro.props
 ---
 
-<section class="services-section">
-  {sectionTitle && <h2 class="sr-only">{sectionTitle}</h2>}
-  <div class="services-grid">
-    {cards.map((card) => (
-      <a href={card.linkUrl} class="service-card">
-        <h3>{card.heading}</h3>
+{cards.length > 0 && (
+  <section class="services-section">
+    {sectionTitle && <h2 class="sr-only">{sectionTitle}</h2>}
+    <div class="services-grid">
+      {cards.map((card) => (
+        <a href={card.linkUrl} class="service-card">
+          <h3>{card.heading}</h3>
 
-        <p>{card.description}</p>
+          <p>{card.description}</p>
 
-        <div class="service-card-footer">
-          <span>{card.linkText}</span>
-          <span class="arrow" aria-hidden="true">
-            <span class="arrow-icon"></span>
-          </span>
-        </div>
-      </a>
-    ))}
-  </div>
-</section>
+          <div class="service-card-footer">
+            <span>{card.linkText}</span>
+            <span class="arrow" aria-hidden="true">
+              <span class="arrow-icon"></span>
+            </span>
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
+)}
 
 <style>
   .sr-only {
