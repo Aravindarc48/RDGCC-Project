@@ -77,6 +77,15 @@ export default defineType({
               options: {
                 hotspot: true,
               },
+              fields: [
+                defineField({
+                  name: 'alt',
+                  title: 'Alternative Text',
+                  type: 'string',
+                  description: 'Descriptive alt text for the person profile photo.',
+                  validation: (Rule) => Rule.required(),
+                }),
+              ],
             }),
 
             defineField({

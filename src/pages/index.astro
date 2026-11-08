@@ -74,7 +74,6 @@ interface SuccessStory {
   description?: string
   linkText?: string
   linkUrl?: string
-  featured?: boolean
   image?: {
     asset?: {
       _ref?: string
@@ -215,9 +214,21 @@ interface ReadyToMoveFasterSection {
   buttonTextColor?: string
 }
 interface FooterData {
-  brandLogo?: any
+  brandLogo?: {
+    asset?: {
+      _ref?: string
+      _type?: string
+    }
+    alt?: string
+  }
   brandDescription?: string
-  partnerLogo?: any
+  partnerLogo?: {
+    asset?: {
+      _ref?: string
+      _type?: string
+    }
+    alt?: string
+  }
   linkColumns?: {
     columnTitle?: string
     links?: {
@@ -298,7 +309,6 @@ const successStoriesQuery = `*[_type == "successStories"][0]{
     description,
     linkText,
     linkUrl,
-    featured,
     image{
       asset,
       alt,
@@ -536,6 +546,7 @@ try {
         />
 
         <Services
+          sectionTitle={services?.sectionTitle}
           cards={services?.cards}
         />
 		<HowWeWork

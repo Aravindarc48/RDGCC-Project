@@ -52,6 +52,15 @@ export default defineType({
               options: {
                 hotspot: true,
               },
+              fields: [
+                defineField({
+                  name: 'alt',
+                  title: 'Alternative Text',
+                  type: 'string',
+                  description: 'Descriptive alt text representing the audience segment.',
+                  validation: (Rule) => Rule.required(),
+                }),
+              ],
               validation: (Rule) => Rule.required(),
             }),
 

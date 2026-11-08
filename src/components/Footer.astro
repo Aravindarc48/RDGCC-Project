@@ -17,10 +17,18 @@ interface SocialLink {
   url?: string
 }
 
+interface FooterImage {
+  asset?: {
+    _ref?: string
+    _type?: string
+  }
+  alt?: string
+}
+
 interface Props {
-  brandLogo?: any
+  brandLogo?: FooterImage
   brandDescription?: string
-  partnerLogo?: any
+  partnerLogo?: FooterImage
   linkColumns?: FooterColumn[]
   contactTitle?: string
   email?: string

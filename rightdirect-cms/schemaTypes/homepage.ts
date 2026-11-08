@@ -34,13 +34,22 @@ export const homepage = defineType({
     }),
 
     defineField({
-        name: 'heroImage',
-        title: 'Hero Image',
-        type: 'image',
-        options: {
+      name: 'heroImage',
+      title: 'Hero Image',
+      type: 'image',
+      options: {
         hotspot: true,
-    },
-        validation: (Rule) => Rule.required(),
+      },
+      fields: [
+        defineField({
+          name: 'alt',
+          title: 'Alternative Text',
+          type: 'string',
+          description: 'Descriptive alt text for screen readers and accessibility.',
+          validation: (Rule) => Rule.required(),
+        }),
+      ],
+      validation: (Rule) => Rule.required(),
     }),
 
     defineField({

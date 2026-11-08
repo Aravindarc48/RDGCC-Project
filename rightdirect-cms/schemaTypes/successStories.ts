@@ -108,12 +108,6 @@ export const successStories = defineType({
               validation: (Rule) => Rule.required(),
             }),
 
-            defineField({
-              name: 'featured',
-              title: 'Featured Story',
-              type: 'boolean',
-              initialValue: false,
-            }),
           ],
 
           preview: {

@@ -13,6 +13,15 @@ export default defineType({
       title: 'Brand Logo',
       type: 'image',
       options: { hotspot: true },
+      fields: [
+        defineField({
+          name: 'alt',
+          title: 'Alternative Text',
+          type: 'string',
+          description: 'Descriptive alt text for the primary brand logo.',
+          validation: (Rule) => Rule.required(),
+        }),
+      ],
     }),
 
     defineField({
@@ -28,6 +37,15 @@ export default defineType({
       title: 'Partner Logo',
       type: 'image',
       options: { hotspot: true },
+      fields: [
+        defineField({
+          name: 'alt',
+          title: 'Alternative Text',
+          type: 'string',
+          description: 'Descriptive alt text for the partner logo.',
+          validation: (Rule) => Rule.required(),
+        }),
+      ],
     }),
 
     // Footer link columns
